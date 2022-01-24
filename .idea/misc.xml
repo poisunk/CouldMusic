@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/AndroidLearnTest/CouldMusic/app/src/main/res/drawable/start_image.xml" value="0.14583333333333334" />
+        <entry key="..\:/AndroidLearnTest/CouldMusic/app/src/main/res/layout/activity_start.xml" value="0.2" />
+      </map>
+    </option>
+  </component>
   <component name="ProjectResources">
     <resource url="http://schemas.android.com/apk/res/android" location="$PROJECT_DIR$" />
   </component>
