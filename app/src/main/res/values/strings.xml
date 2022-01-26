@@ -4,4 +4,5 @@
     <string name="register_phone">请输入手机号</string>
     <string name="register_password">请输入密码</string>
     <string name="login">登录</string>
+    <string name="please_login">立即登录</string>
 </resources>
