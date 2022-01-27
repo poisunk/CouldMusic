@@ -11,6 +11,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.couldmusic.R;
 import com.example.couldmusic.base.BaseActivity;
 import com.example.couldmusic.page.fragment.LoginFragment;
+import com.example.couldmusic.page.fragment.MainFragment;
 
 public class MainActivity extends BaseActivity {
 
@@ -25,7 +26,7 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
 
         FragmentManager fragmentManager=getSupportFragmentManager();
-        Fragment fragment= new LoginFragment();
+        Fragment fragment= new MainFragment();
         FragmentTransaction transaction= fragmentManager.beginTransaction();
         transaction.replace(R.id.included_interface,fragment);
         transaction.commit();

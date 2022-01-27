@@ -1,24 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/interface_main_fragment"
+    android:id="@+id/content_drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.fragment.app.FragmentContainerView
+    <androidx.cardview.widget.CardView
+        android:id="@+id/content_card"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <include layout="@layout/fragment_content_main"/>
 
 
-    </androidx.fragment.app.FragmentContainerView>
+    </androidx.cardview.widget.CardView>
 
 
-    <androidx.fragment.app.FragmentContainerView
+    <FrameLayout
+        android:id="@+id/content_left"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:layout_gravity="start">
 
         <include layout="@layout/fragment_content_left_menu"/>
-    </androidx.fragment.app.FragmentContainerView>
+    </FrameLayout>
 
 </androidx.drawerlayout.widget.DrawerLayout>

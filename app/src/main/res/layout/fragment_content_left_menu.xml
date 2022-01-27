@@ -2,8 +2,16 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/content_left_menu"
-    android:layout_width="280dp"
-    android:layout_height="match_parent">
+    android:layout_width="260dp"
+    android:layout_height="match_parent"
+    android:background="@color/background_gray">
+
+    <com.example.couldmusic.widget.StatusBar
+        android:id="@+id/content_left_menu_status_bar"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/background_gray"
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/content_left_menu_bar"
@@ -11,7 +19,7 @@
         android:layout_height="50dp"
         android:background="@color/background_gray"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/content_left_menu_status_bar">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:layout_width="35dp"
@@ -29,14 +37,12 @@
 
 
     <ScrollView
+        app:layout_constraintVertical_weight="1"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/content_left_menu_bar"
-        app:layout_constraintVertical_weight="1"
         android:background="@color/background_gray">
-
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
@@ -53,8 +59,10 @@
                 android:layout_gravity="center_horizontal">
 
                 <TextView
+                    android:layout_marginStart="15dp"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:text="@string/please_login"/>
 
 
             </androidx.cardview.widget.CardView>
@@ -68,8 +76,10 @@
                 app:cardCornerRadius="20dp">
 
                 <TextView
+                    android:layout_marginStart="15dp"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:text="@string/please_login"/>
 
 
             </androidx.cardview.widget.CardView>

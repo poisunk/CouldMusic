@@ -16,9 +16,9 @@
             android:name=".page.activity.StartActivity"
             android:exported="true">
             <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER" />
+               <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
 
-                <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
     </application>
