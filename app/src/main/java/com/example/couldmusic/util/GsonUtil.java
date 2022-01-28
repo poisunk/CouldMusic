@@ -20,9 +20,9 @@ public class GsonUtil {
     /**
      * 将字符串转换成对应的Java对象
      */
-    public static <T> T fromJSON(String json, Class<T> cls) {
+    public static <T> T fromJSON(String json, Class<T> tClass) {
         try {
-            return createGson().fromJson(json, cls);
+            return createGson().fromJson(json, tClass);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,6 +1,5 @@
 package com.example.couldmusic.login.view;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -17,14 +16,9 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.couldmusic.R;
-import com.example.couldmusic.base.BaseFragment;
-import com.example.couldmusic.base.BasePresenter;
-import com.example.couldmusic.bean.LoginBean;
-import com.example.couldmusic.login.contract.LoginContract;
-import com.example.couldmusic.login.presenter.LoginPresenter;
 import com.example.couldmusic.main.fragment.MainFragment;
 
-public class LoginFragment extends BaseFragment<LoginPresenter> implements LoginContract.View {
+public class LoginFragment extends Fragment implements View.OnClickListener{
 
 
     private Button mButtonBack;
@@ -36,7 +30,8 @@ public class LoginFragment extends BaseFragment<LoginPresenter> implements Login
 
 
     public static LoginFragment newInstance() {
-        return new LoginFragment();
+        LoginFragment fragment=new LoginFragment();
+        return fragment;
     }
 
     public LoginFragment(){
@@ -75,32 +70,20 @@ public class LoginFragment extends BaseFragment<LoginPresenter> implements Login
                 backToMain(new MainFragment());
                 break;
             case R.id.fragment_login_login_button:
-                if(!TextUtils.isEmpty((mEditPassword.getText())) &&!TextUtils.isEmpty((mEditPhone.getText()))){
-                    String password=mEditPassword.getText().toString();
-                    String phone=mEditPhone.getText().toString();
-                    mPresenter.login(phone,password);
+                if(!TextUtils.isEmpty(mEditPassword.getText()) &&!TextUtils.isEmpty(mEditPhone.getText())){
+                    String password=mEditPassword.getText().toString().trim();
+                    String phone=mEditPhone.getText().toString().trim();
+
                 }else{
-                    Toast.makeText(mContext,"手机号或密码不能为空!",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(),"手机号或密码不能为空!",Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
     }
 
-    @Override
-    public void onLoginSuccess(LoginBean bean) {
+    public void loginRequest(String phone,String password){
 
-
-
-
-        backToMain(new MainFragment());
     }
-
-    @Override
-    public void onLoginFail() {
-        Toast.makeText(mContext,"登录失败!请检查您输入的手机号与密码",Toast.LENGTH_SHORT).show();
-    }
-
-
     /**
      * 转换页面到主界面
      */
@@ -111,8 +94,4 @@ public class LoginFragment extends BaseFragment<LoginPresenter> implements Login
         transaction.commit();
     }
 
-    @Override
-    public LoginPresenter onCreatePresenter() {
-        return new LoginPresenter(this);
-    }
 }
