@@ -1,7 +1,9 @@
 package com.example.couldmusic.main.fragment;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,14 +19,22 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.couldmusic.R;
+import com.example.couldmusic.bean.LoginBean;
 import com.example.couldmusic.login.view.LoginFragment;
+import com.google.gson.Gson;
+
+import java.io.Serializable;
+import java.util.Objects;
 
 public class MainFragment extends Fragment implements View.OnClickListener{
+
+    private final String ARG_LOGIN_BEAN="loginBean";
 
 
     public MainFragment(){
 
     }
+    private LoginBean mLoginBean;
 
     private DrawerLayout mDrawerLayout;
 
@@ -32,16 +42,46 @@ public class MainFragment extends Fragment implements View.OnClickListener{
 
     private LinearLayout mLinearLayout;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initBundle();
+        if(mLoginBean==null){
+            SharedPreferences preferences= PreferenceManager.getDefaultSharedPreferences(requireContext());
+            String loginBean=preferences.getString(ARG_LOGIN_BEAN,null);
+            if(loginBean!=null){
+                mLoginBean=new Gson().fromJson(loginBean,LoginBean.class);
+            }
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_content,container,false);
+        View v=inflater.inflate(R.layout.fragment_content,container,false);
+        initView(v);
+        initEvent();
+        return v;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        initView(view);
-        initEvent();
+
+    }
+
+
+    private void initBundle(){
+        Bundle args=getArguments();
+        if(args!=null){
+            Serializable obj = args.getSerializable("loginBean");
+            if (obj instanceof LoginBean) {
+                mLoginBean = (LoginBean) obj;
+                SharedPreferences.Editor editor= PreferenceManager.
+                        getDefaultSharedPreferences(requireContext()).edit();
+                editor.putString(ARG_LOGIN_BEAN,new Gson().toJson(mLoginBean));
+                editor.apply();
+            }
+        }
     }
 
     private void initView(View v){
@@ -68,12 +108,16 @@ public class MainFragment extends Fragment implements View.OnClickListener{
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.content_left_menu_bar:
-                FragmentManager fragmentManager=getActivity().getSupportFragmentManager();
-                Fragment fragment=LoginFragment.newInstance();
-                FragmentTransaction transaction= fragmentManager.beginTransaction();
-                transaction.replace(R.id.included_interface,fragment);
-                transaction.commit();
+                if(mLoginBean==null){
+                    FragmentManager fragmentManager= requireActivity().getSupportFragmentManager();
+                    Fragment fragment=LoginFragment.newInstance();
+                    FragmentTransaction transaction= fragmentManager.beginTransaction();
+                    transaction.replace(R.id.included_interface,fragment);
+                    transaction.remove(this);
+                    transaction.commit();
+                }
                 break;
+
         }
     }
 }

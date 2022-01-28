@@ -16,7 +16,19 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.couldmusic.R;
+import com.example.couldmusic.bean.LoginBean;
 import com.example.couldmusic.main.fragment.MainFragment;
+import com.example.couldmusic.util.HttpUtil;
+import com.example.couldmusic.util.ToastUtil;
+import com.example.couldmusic.util.Utility;
+
+import java.io.IOException;
+import java.util.Objects;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+import okhttp3.internal.Util;
 
 public class LoginFragment extends Fragment implements View.OnClickListener{
 
@@ -73,16 +85,56 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
                 if(!TextUtils.isEmpty(mEditPassword.getText()) &&!TextUtils.isEmpty(mEditPhone.getText())){
                     String password=mEditPassword.getText().toString().trim();
                     String phone=mEditPhone.getText().toString().trim();
-
+                    loginRequest(phone,password);
                 }else{
-                    Toast.makeText(getContext(),"手机号或密码不能为空!",Toast.LENGTH_SHORT).show();
+                    ToastUtil.show("手机号或密码不能为空!");
                 }
                 break;
         }
     }
 
     public void loginRequest(String phone,String password){
+        String address="http://redrock.udday.cn:2022/login/cellphone?phone="+phone+"&password="+password;
+        HttpUtil.sendOkHttpRequest(address, new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                requireActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getContext(),"网络请求失败!",Toast.LENGTH_SHORT).show();
+                    }
+                });
+                e.printStackTrace();
+            }
 
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                final String responseText=response.body().string();
+                final LoginBean loginBean = Utility.handleLoginByPhone(responseText);
+                requireActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(loginBean!=null&&loginBean.getCode()==200){
+                            FragmentManager fm=getActivity().getSupportFragmentManager();
+                            Fragment fragment=fm.findFragmentById(R.id.content_drawer_layout);
+                            if (fragment==null){
+                                fragment=new MainFragment();
+                            }
+                            /**
+                             * 将获取到的数据传回MainFragment中
+                             */
+                            Bundle args=new Bundle();
+                            args.putSerializable("loginBean",loginBean);
+                            fragment.setArguments(args);
+                            backToMain(fragment);
+                        }else{
+                            Toast.makeText(getContext(),"登录失败!请检查您输入的手机号与密码",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+            }
+        });
     }
     /**
      * 转换页面到主界面
@@ -91,6 +143,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
         FragmentManager fragmentManager=getActivity().getSupportFragmentManager();
         FragmentTransaction transaction= fragmentManager.beginTransaction();
         transaction.replace(R.id.included_interface,fragment);
+        transaction.remove(this);
         transaction.commit();
     }
 

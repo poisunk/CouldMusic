@@ -1,8 +1,9 @@
 package com.example.couldmusic.bean;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class LoginBean {
+public class LoginBean implements Serializable {
 
     /**
     "loginType": 1,
@@ -61,7 +62,7 @@ public class LoginBean {
         private int baoyueVersion;
         private int donateVersion;
         private int vipType;
-        private int viptypeVersion;
+        private long viptypeVersion;
         private boolean anonimousUser;
         private boolean uninitialized;
 
@@ -169,11 +170,11 @@ public class LoginBean {
             this.vipType = vipType;
         }
 
-        public int getViptypeVersion() {
+        public long getViptypeVersion() {
             return viptypeVersion;
         }
 
-        public void setViptypeVersion(int viptypeVersion) {
+        public void setViptypeVersion(long viptypeVersion) {
             this.viptypeVersion = viptypeVersion;
         }
 
