@@ -1,4 +1,4 @@
-package com.example.couldmusic.page.activity;
+package com.example.couldmusic.main.activity;
 
 
 import android.os.Bundle;

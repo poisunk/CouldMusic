@@ -1,4 +1,4 @@
-package com.example.couldmusic.page.activity;
+package com.example.couldmusic.main.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,8 +10,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.couldmusic.R;
 import com.example.couldmusic.base.BaseActivity;
-import com.example.couldmusic.page.fragment.LoginFragment;
-import com.example.couldmusic.page.fragment.MainFragment;
+import com.example.couldmusic.main.fragment.MainFragment;
 
 public class MainActivity extends BaseActivity {
 
