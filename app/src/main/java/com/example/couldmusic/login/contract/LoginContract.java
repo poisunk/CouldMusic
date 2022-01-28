@@ -6,10 +6,10 @@ import com.example.couldmusic.base.BaseView;
 import com.example.couldmusic.bean.LoginBean;
 
 public interface LoginContract {
-    interface View extends BaseView, BaseModel {
+    interface View extends BaseView{
         void onLoginSuccess(LoginBean bean);
 
-        void onLoginFail(String e);
+        void onLoginFail();
     }
 
     interface Model extends BaseModel {

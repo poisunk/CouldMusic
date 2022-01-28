@@ -13,13 +13,17 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.couldmusic.R;
 import com.example.couldmusic.base.BaseFragment;
+import com.example.couldmusic.base.BasePresenter;
 import com.example.couldmusic.bean.LoginBean;
 import com.example.couldmusic.login.contract.LoginContract;
+import com.example.couldmusic.login.view.LoginFragment;
 
-public class MainFragment extends BaseFragment {
+public class MainFragment extends BaseFragment{
 
 
     public MainFragment(){
@@ -70,9 +74,18 @@ public class MainFragment extends BaseFragment {
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.content_left_menu_bar:
-
+                FragmentManager fragmentManager=getActivity().getSupportFragmentManager();
+                Fragment fragment= new LoginFragment();
+                FragmentTransaction transaction= fragmentManager.beginTransaction();
+                transaction.replace(R.id.included_interface,fragment);
+                transaction.commit();
                 break;
         }
     }
 
+
+    @Override
+    public BasePresenter onCreatePresenter() {
+        return null;
+    }
 }

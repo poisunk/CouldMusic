@@ -18,4 +18,6 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment imp
         super.onCreate(savedInstanceState);
         mContext=getContext();
     }
+
+    public abstract P onCreatePresenter();
 }
