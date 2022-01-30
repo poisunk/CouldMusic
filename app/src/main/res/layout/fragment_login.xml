@@ -43,7 +43,7 @@
                 android:layout_marginStart="15dp"
                 android:autofillHints="phone"
                 android:background="@null"
-                android:drawableStart="@drawable/ic_register_phone"
+                android:drawableStart="@drawable/register_phone"
                 android:drawablePadding="10dp"
                 android:inputType="phone"
                 android:hint="@string/register_phone"

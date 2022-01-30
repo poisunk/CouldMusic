@@ -23,9 +23,10 @@
         app:layout_constraintTop_toBottomOf="@id/content_left_menu_status_bar">
 
         <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/content_left_menu_bar_pic"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/ic_login_pic"
+            android:src="@drawable/music_circle"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="20dp"/>
 
@@ -88,6 +89,18 @@
 
 
             </androidx.cardview.widget.CardView>
+
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="220dp"
+                android:layout_height="50dp"
+                android:id="@+id/content_left_menu_button_cancel_login"
+                app:cornerRadius="20dp"
+                android:backgroundTint="@color/red"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="30dp"
+                android:text="@string/cancel_login"
+                android:textColor="@color/white"
+                android:textSize="15sp" />
         </LinearLayout>
     </ScrollView>
 
