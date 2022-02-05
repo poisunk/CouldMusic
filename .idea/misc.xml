@@ -25,10 +25,12 @@
         <entry key="..\:/AndroidLearnTest/CouldMusic/app/src/main/res/layout/fragment_home.xml" value="0.12318840579710146" />
         <entry key="..\:/AndroidLearnTest/CouldMusic/app/src/main/res/layout/fragment_login.xml" value="0.1" />
         <entry key="..\:/AndroidLearnTest/CouldMusic/app/src/main/res/layout/fragment_mine.xml" value="0.17135416666666667" />
+        <entry key="..\:/AndroidLearnTest/CouldMusic/app/src/main/res/layout/fragment_play_list.xml" value="0.264" />
         <entry key="..\:/AndroidLearnTest/CouldMusic/app/src/main/res/layout/fragment_slideshow.xml" value="0.12318840579710146" />
         <entry key="..\:/AndroidLearnTest/CouldMusic/app/src/main/res/layout/homepage_banner.xml" value="0.4" />
         <entry key="..\:/AndroidLearnTest/CouldMusic/app/src/main/res/layout/interface_.xml" value="0.1296875" />
         <entry key="..\:/AndroidLearnTest/CouldMusic/app/src/main/res/layout/item_list_cover.xml" value="0.4" />
+        <entry key="..\:/AndroidLearnTest/CouldMusic/app/src/main/res/layout/item_play_list_song.xml" value="0.4" />
         <entry key="..\:/AndroidLearnTest/CouldMusic/app/src/main/res/layout/main_interface.xml" value="0.2" />
         <entry key="..\:/AndroidLearnTest/CouldMusic/app/src/main/res/layout/nav_header_test.xml" value="0.12318840579710146" />
         <entry key="..\:/AndroidLearnTest/CouldMusic/app/src/main/res/layout/recommed_list.xml" value="0.2" />

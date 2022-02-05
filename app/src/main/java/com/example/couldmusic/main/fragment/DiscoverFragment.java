@@ -5,11 +5,16 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
@@ -17,6 +22,9 @@ import com.example.couldmusic.R;
 import com.example.couldmusic.bean.BannerBean;
 import com.example.couldmusic.bean.HomePageBean;
 import com.example.couldmusic.bean.RecommendListBean;
+import com.example.couldmusic.main.adapter.ListRecyclerAdapter;
+import com.example.couldmusic.main.model.OnItemClickListener;
+import com.example.couldmusic.playlist.ListFragment;
 import com.example.couldmusic.util.HttpUtil;
 import com.example.couldmusic.util.Utility;
 import com.example.couldmusic.widget.ListCover;
@@ -27,20 +35,18 @@ import com.youth.banner.loader.ImageLoader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class DiscoverFragment extends Fragment {
+public class DiscoverFragment extends Fragment implements View.OnClickListener{
 
     private final GlideImageLoader glideImageLoader=new GlideImageLoader();
+    private final List<String> bannerImagePath=new ArrayList<>();
 
-    private static HomePageBean homePageBean;
-    private static List<String> bannerImagePath=new ArrayList<>();
-
-    private final List<ListCover> lcItem=new ArrayList<>();
-
+    private RecyclerView mRecyclerView;
     private SwipeRefreshLayout mSwipeRefresh;
 
     private Banner mBanner;
@@ -76,16 +82,7 @@ public class DiscoverFragment extends Fragment {
     private void initView(View v){
         mSwipeRefresh=v.findViewById(R.id.swipe_discover);
         mBanner= v.findViewById(R.id.homepage_banner);
-        ListCover lcItem1=v.findViewById(R.id.recommend_list_item_1);
-        ListCover lcItem2=v.findViewById(R.id.recommend_list_item_2);
-        ListCover lcItem3=v.findViewById(R.id.recommend_list_item_3);
-        ListCover lcItem4=v.findViewById(R.id.recommend_list_item_4);
-        ListCover lcItem5=v.findViewById(R.id.recommend_list_item_5);
-        lcItem.add(lcItem1);
-        lcItem.add(lcItem2);
-        lcItem.add(lcItem3);
-        lcItem.add(lcItem4);
-        lcItem.add(lcItem5);
+        mRecyclerView=v.findViewById(R.id.recommend_list_recycler);
     }
 
     private void initEvent(){
@@ -108,14 +105,16 @@ public class DiscoverFragment extends Fragment {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                final String responseText=response.body().string();
+                final String responseText= Objects.requireNonNull(response.body()).string();
                 final HomePageBean homePageBean= Utility.handleHomePageInfo(responseText);
                 requireActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        loadBanner(homePageBean.getBannerBean());
-                        loadRecommendList(homePageBean.getRecommendListBean());
-                        mSwipeRefresh.setRefreshing(false);
+                        if (homePageBean!=null){
+                            loadBanner(homePageBean.getBannerBean());
+                            loadRecommendList(homePageBean.getRecommendListBean());
+                            mSwipeRefresh.setRefreshing(false);
+                        }
                     }
                 });
             }
@@ -124,6 +123,7 @@ public class DiscoverFragment extends Fragment {
     }
 
     private void loadBanner(BannerBean bannerBean){
+        bannerImagePath.clear();
         for(BannerBean.BannersBean bean : bannerBean.getBanners()){
             bannerImagePath.add(bean.getPic());
         }
@@ -137,13 +137,35 @@ public class DiscoverFragment extends Fragment {
     }
 
     private void loadRecommendList(RecommendListBean recommendListBean){
-        List<RecommendListBean.Creatives> creatives=recommendListBean.getCreatives();
-        for(int i=0;i<lcItem.size();i++){
-            lcItem.get(i).setImage(requireContext(),creatives.get(i).getUiElement().getImage().getImageUrl());
-            lcItem.get(i).setTitle(creatives.get(i).getUiElement().getMainTitle().getTitle());
-            lcItem.get(i).setPlayCount(creatives.get(i).getResources().get(0).getResourceExtInfo().getPlayCount());
-        }
+        ListRecyclerAdapter adapter=new ListRecyclerAdapter(recommendListBean,this);
+        adapter.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                FragmentManager manager= requireActivity().getSupportFragmentManager();
+                Fragment fragment=manager.findFragmentById(R.id.fragment_play_list);
+                if (fragment==null){
+                    fragment=new ListFragment();
+                }
+                Bundle args=new Bundle();
+                args.putSerializable("listbean",recommendListBean.getCreatives().get(position));
+                fragment.setArguments(args);
+                FragmentTransaction transaction=manager.beginTransaction();
+                transaction.add(R.id.included_interface,fragment);
+                transaction.hide(manager.findFragmentById(R.id.included_interface));
+                transaction.commit();
+            }
+        });
+        mRecyclerView.setAdapter(adapter);
+        LinearLayoutManager manager=new LinearLayoutManager(requireContext());
+        manager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        mRecyclerView.setLayoutManager(manager);
     }
+
+    @Override
+    public void onClick(View v) {
+
+    }
+
 
     private static class GlideImageLoader extends ImageLoader{
 

@@ -6,7 +6,7 @@ import java.util.List;
 public class RecommendListBean implements Serializable {
     private List<Creatives> creatives;
 
-    public static class Creatives {
+    public static class Creatives implements Serializable{
         /**
          * "creativeType": "list",
          * "creativeId": "3136952023",

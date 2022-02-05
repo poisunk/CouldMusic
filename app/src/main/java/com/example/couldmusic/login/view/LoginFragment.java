@@ -1,5 +1,6 @@
 package com.example.couldmusic.login.view;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -28,7 +29,6 @@ import java.util.Objects;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
-import okhttp3.internal.Util;
 
 public class LoginFragment extends Fragment implements View.OnClickListener{
 
@@ -75,6 +75,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
         mButtonBack.setOnClickListener(this);
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(View v) {
         switch (v.getId()){
@@ -95,52 +96,53 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
 
     public void loginRequest(String phone,String password){
         String address="http://redrock.udday.cn:2022/login/cellphone?phone="+phone+"&password="+password;
-        HttpUtil.sendOkHttpRequest(address, new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                requireActivity().runOnUiThread(new Runnable() {
+        HttpUtil.sendOkHttpRequest(address,
+                new Callback() {
                     @Override
-                    public void run() {
-                        Toast.makeText(getContext(),"网络请求失败!",Toast.LENGTH_SHORT).show();
-                    }
-                });
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                final String responseText=response.body().string();
-                final LoginBean loginBean = Utility.handleLoginByPhone(responseText);
-                requireActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(loginBean!=null&&loginBean.getCode()==200){
-                            FragmentManager fm=getActivity().getSupportFragmentManager();
-                            Fragment fragment=fm.findFragmentById(R.id.content_drawer_layout);
-                            if (fragment==null){
-                                fragment=new MainFragment();
+                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                        requireActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getContext(),"网络请求失败!",Toast.LENGTH_SHORT).show();
                             }
-                            /**
-                             * 将获取到的数据传回MainFragment中
-                             */
-                            Bundle args=new Bundle();
-                            args.putSerializable("loginBean",loginBean);
-                            fragment.setArguments(args);
-                            backToMain(fragment);
-                        }else{
-                            Toast.makeText(getContext(),"登录失败!请检查您输入的手机号与密码",Toast.LENGTH_SHORT).show();
-                        }
+                        });
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                        final String responseText= Objects.requireNonNull(response.body()).string();
+                        final LoginBean loginBean = Utility.handleLoginByPhone(responseText);
+                        requireActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(loginBean!=null&&loginBean.getCode()==200){
+                                    FragmentManager fm= requireActivity().getSupportFragmentManager();
+                                    Fragment fragment=fm.findFragmentById(R.id.content_drawer_layout);
+                                    if (fragment==null){
+                                        fragment=new MainFragment();
+                                    }
+                                    /**
+                                     将获取到的数据传回MainFragment中
+                                     */
+                                    Bundle args=new Bundle();
+                                    args.putSerializable("loginBean",loginBean);
+                                    fragment.setArguments(args);
+                                    backToMain(fragment);
+                                }else{
+                                    Toast.makeText(getContext(),"登录失败!请检查您输入的手机号与密码",Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+
                     }
                 });
-
-            }
-        });
     }
     /**
      * 转换页面到主界面
      */
     public void backToMain(Fragment fragment){
-        FragmentManager fragmentManager=getActivity().getSupportFragmentManager();
+        FragmentManager fragmentManager=requireActivity().getSupportFragmentManager();
         FragmentTransaction transaction= fragmentManager.beginTransaction();
         transaction.replace(R.id.included_interface,fragment);
         transaction.remove(this);

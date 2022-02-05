@@ -19,52 +19,14 @@
             android:textSize="20sp"
             android:layout_margin="15dp"/>
 
-        <HorizontalScrollView
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recommend_list_recycler"
+            android:orientation="horizontal"
+            android:overScrollMode="never"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:scrollbars="none"
-            android:overScrollMode="never">
-
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="680dp"
-                android:layout_height="match_parent">
-
-
-                <com.example.couldmusic.widget.ListCover
-                    android:id="@+id/recommend_list_item_1"
-                    android:layout_width="136dp"
-                    android:layout_height="match_parent"/>
-
-                <com.example.couldmusic.widget.ListCover
-                    android:id="@+id/recommend_list_item_2"
-                    android:layout_width="136dp"
-                    android:layout_height="match_parent"/>
-
-                <com.example.couldmusic.widget.ListCover
-                    android:id="@+id/recommend_list_item_3"
-                    android:layout_width="136dp"
-                    android:layout_height="match_parent"/>
-
-                <com.example.couldmusic.widget.ListCover
-                    android:id="@+id/recommend_list_item_4"
-                    android:layout_width="136dp"
-                    android:layout_height="match_parent"/>
-
-                <com.example.couldmusic.widget.ListCover
-                    android:id="@+id/recommend_list_item_5"
-                    android:layout_width="136dp"
-                    android:layout_height="match_parent"/>
-
-                <com.example.couldmusic.widget.ListCover
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"/>
-
-
-            </LinearLayout>
-
-        </HorizontalScrollView>
+            android:layout_height="wrap_content"
+            android:layout_marginStart="9dp"
+            android:layout_marginEnd="9dp"/>
 
 
     </LinearLayout>
