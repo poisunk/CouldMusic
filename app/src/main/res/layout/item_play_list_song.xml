@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_play_list_song"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="50dp">
@@ -23,17 +24,23 @@
             android:layout_width="match_parent"
             android:layout_height="25dp"
             android:layout_weight="1"
+            android:lines="1"
+            android:ellipsize="end"
             android:gravity="start"
             android:textSize="16sp"
+            android:layout_marginEnd="30dp"
             android:textColor="@color/black"/>
 
         <TextView
-            android:id="@+id/item_play_list_song_mes"
+            android:id="@+id/item_play_list_song_ar"
             android:layout_width="match_parent"
             android:layout_height="25dp"
             android:layout_weight="1"
+            android:lines="1"
+            android:ellipsize="end"
             android:gravity="start"
             android:textSize="16sp"
+            android:layout_marginEnd="30dp"
             android:textColor="@color/deep_gray"/>
 
     </LinearLayout>

@@ -1,10 +1,8 @@
 package com.example.couldmusic.main.adapter;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,26 +16,26 @@ import com.example.couldmusic.R;
 import com.example.couldmusic.bean.RecommendListBean;
 import com.example.couldmusic.main.model.OnItemClickListener;
 
-public class ListRecyclerAdapter extends RecyclerView.Adapter<ListRecyclerAdapter.InnerHolder>{
+public class RecommendListRecyclerAdapter extends RecyclerView.Adapter<RecommendListRecyclerAdapter.InnerHolder>{
 
     private RecommendListBean bean;
     private Fragment fragment;
     private OnItemClickListener mClickListener;
 
 
-    public ListRecyclerAdapter(RecommendListBean bean,Fragment fragment){
+    public RecommendListRecyclerAdapter(RecommendListBean bean, Fragment fragment){
         this.bean=bean;
         this.fragment=fragment;
     }
     @NonNull
     @Override
-    public ListRecyclerAdapter.InnerHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RecommendListRecyclerAdapter.InnerHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new InnerHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_cover,
                 parent, false),mClickListener);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ListRecyclerAdapter.InnerHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecommendListRecyclerAdapter.InnerHolder holder, int position) {
         Glide.with(fragment.requireContext()).load(bean.getCreatives().get(position).getUiElement().getImage().getImageUrl())
                 .into(holder.mImageView);
         holder.mCount.setText(countString(bean.getCreatives().get(position).getResources().get(0).getResourceExtInfo().getPlayCount()));

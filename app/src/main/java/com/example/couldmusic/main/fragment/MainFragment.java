@@ -108,7 +108,7 @@ public class MainFragment extends Fragment implements View.OnClickListener{
     private void initView(View v){
         tvLoginUser= v.findViewById(R.id.content_left_menu_bar_name);
         civLoginUser= v.findViewById(R.id.content_left_menu_bar_pic);
-        mDrawerLayout= v.findViewById(R.id.content_drawer_layout);
+        mDrawerLayout= v.findViewById(R.id.fragment_content_drawer_layout);
         mToolbar= v.findViewById(R.id.content_main_tool_bar);
         mbCancelLogin= v.findViewById(R.id.content_left_menu_button_cancel_login);
         llMenuBar= v.findViewById(R.id.content_left_menu_bar);
@@ -156,7 +156,7 @@ public class MainFragment extends Fragment implements View.OnClickListener{
             tvLoginUser.setText(mLoginBean.getProfile().getNickname());
         }else{
             tvLoginUser.setText("立即登录>");
-            civLoginUser.setBackgroundResource(R.drawable.music_circle);
+            Glide.with(requireActivity()).load(R.drawable.music_circle).into(civLoginUser);
         }
     }
 
@@ -169,7 +169,7 @@ public class MainFragment extends Fragment implements View.OnClickListener{
                     FragmentManager fragmentManager= requireActivity().getSupportFragmentManager();
                     Fragment fragment=LoginFragment.newInstance();
                     FragmentTransaction transaction= fragmentManager.beginTransaction();
-                    transaction.replace(R.id.included_interface,fragment);
+                    transaction.add(R.id.included_interface,fragment);
                     transaction.remove(this);
                     transaction.commit();
                 }

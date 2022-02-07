@@ -5,7 +5,9 @@ import android.util.Log;
 import com.example.couldmusic.bean.BannerBean;
 import com.example.couldmusic.bean.HomePageBean;
 import com.example.couldmusic.bean.LoginBean;
+import com.example.couldmusic.bean.PlayListDetailBean;
 import com.example.couldmusic.bean.RecommendListBean;
+import com.example.couldmusic.bean.SongsDetailBean;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -46,6 +48,29 @@ public class Utility {
 
             return homePageBean;
         } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static PlayListDetailBean handlePlayListDetailInfo(String response){
+        try {
+            JSONObject jsonObject=new JSONObject(response);
+            JSONObject playlist=jsonObject.getJSONObject("playlist");
+            String info=playlist.toString();
+            return new Gson().fromJson(info,PlayListDetailBean.class);
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static SongsDetailBean handleSongsDetailInfo(String response){
+        try {
+            JSONObject jsonObject=new JSONObject(response);
+            String info=jsonObject.toString();
+            return new Gson().fromJson(info,SongsDetailBean.class);
+        }catch (JSONException e){
             e.printStackTrace();
         }
         return null;

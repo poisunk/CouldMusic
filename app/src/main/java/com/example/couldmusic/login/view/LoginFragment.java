@@ -118,7 +118,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
                             public void run() {
                                 if(loginBean!=null&&loginBean.getCode()==200){
                                     FragmentManager fm= requireActivity().getSupportFragmentManager();
-                                    Fragment fragment=fm.findFragmentById(R.id.content_drawer_layout);
+                                    Fragment fragment=fm.findFragmentById(R.id.fragment_content_drawer_layout);
                                     if (fragment==null){
                                         fragment=new MainFragment();
                                     }
@@ -144,7 +144,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
     public void backToMain(Fragment fragment){
         FragmentManager fragmentManager=requireActivity().getSupportFragmentManager();
         FragmentTransaction transaction= fragmentManager.beginTransaction();
-        transaction.replace(R.id.included_interface,fragment);
+        transaction.add(R.id.included_interface,fragment);
         transaction.remove(this);
         transaction.commit();
     }

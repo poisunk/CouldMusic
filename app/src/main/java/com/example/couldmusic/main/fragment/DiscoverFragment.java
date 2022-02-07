@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -22,12 +21,11 @@ import com.example.couldmusic.R;
 import com.example.couldmusic.bean.BannerBean;
 import com.example.couldmusic.bean.HomePageBean;
 import com.example.couldmusic.bean.RecommendListBean;
-import com.example.couldmusic.main.adapter.ListRecyclerAdapter;
+import com.example.couldmusic.main.adapter.RecommendListRecyclerAdapter;
 import com.example.couldmusic.main.model.OnItemClickListener;
 import com.example.couldmusic.playlist.ListFragment;
 import com.example.couldmusic.util.HttpUtil;
 import com.example.couldmusic.util.Utility;
-import com.example.couldmusic.widget.ListCover;
 import com.youth.banner.Banner;
 import com.youth.banner.BannerConfig;
 import com.youth.banner.loader.ImageLoader;
@@ -137,21 +135,20 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener{
     }
 
     private void loadRecommendList(RecommendListBean recommendListBean){
-        ListRecyclerAdapter adapter=new ListRecyclerAdapter(recommendListBean,this);
+        RecommendListRecyclerAdapter adapter=new RecommendListRecyclerAdapter(recommendListBean,this);
         adapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 FragmentManager manager= requireActivity().getSupportFragmentManager();
                 Fragment fragment=manager.findFragmentById(R.id.fragment_play_list);
                 if (fragment==null){
-                    fragment=new ListFragment();
+                    fragment=new ListFragment(recommendListBean.getCreatives().get(position).getCreativeId());
                 }
                 Bundle args=new Bundle();
-                args.putSerializable("listbean",recommendListBean.getCreatives().get(position));
+                args.putSerializable("listBean",recommendListBean.getCreatives().get(position));
                 fragment.setArguments(args);
                 FragmentTransaction transaction=manager.beginTransaction();
-                transaction.add(R.id.included_interface,fragment);
-                transaction.hide(manager.findFragmentById(R.id.included_interface));
+                transaction.replace(R.id.fragment_content_main,fragment);
                 transaction.commit();
             }
         });
