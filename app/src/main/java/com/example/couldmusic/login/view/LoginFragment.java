@@ -32,6 +32,9 @@ import okhttp3.Response;
 
 public class LoginFragment extends Fragment implements View.OnClickListener{
 
+    @SuppressLint("StaticFieldLeak")
+    private static LoginFragment loginFragment=new LoginFragment();
+
 
     private Button mButtonBack;
     private Button mButtonLogin;
@@ -42,8 +45,12 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
 
 
     public static LoginFragment newInstance() {
-        LoginFragment fragment=new LoginFragment();
-        return fragment;
+        loginFragment=new LoginFragment();
+        return loginFragment;
+    }
+
+    public LoginFragment getInstance(){
+        return loginFragment;
     }
 
     public LoginFragment(){

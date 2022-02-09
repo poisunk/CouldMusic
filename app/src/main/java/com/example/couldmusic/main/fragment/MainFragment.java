@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,18 +25,27 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.bumptech.glide.Glide;
 import com.example.couldmusic.R;
 import com.example.couldmusic.bean.LoginBean;
+import com.example.couldmusic.bean.SongsDetailBean;
 import com.example.couldmusic.login.view.LoginFragment;
 import com.example.couldmusic.main.adapter.MainViewPaperAdapter;
+import com.example.couldmusic.util.HttpUtil;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.gson.Gson;
+
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class MainFragment extends Fragment implements View.OnClickListener{
+
+    private static MainFragment mainFragment=new MainFragment();
 
     private final String ARG_LOGIN_BEAN="loginBean";
 
@@ -44,9 +54,7 @@ public class MainFragment extends Fragment implements View.OnClickListener{
     private final String[] tabName={"发现","我的","云村"};
 
 
-    public MainFragment(){
 
-    }
     private LoginBean mLoginBean;
 
     private ViewPager2 mViewPaper2;
@@ -61,6 +69,20 @@ public class MainFragment extends Fragment implements View.OnClickListener{
     private DrawerLayout mDrawerLayout;
     private Toolbar mToolbar;
     private LinearLayout llMenuBar;
+
+    public static MainFragment newInstance(){
+        mainFragment=new MainFragment();
+        return mainFragment;
+    }
+
+
+    public static MainFragment getInstance(){
+        return mainFragment;
+    }
+
+    public MainFragment(){
+
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -123,9 +145,9 @@ public class MainFragment extends Fragment implements View.OnClickListener{
     }
 
     private void initPage(){
-        fragments.add(new DiscoverFragment());
-        fragments.add(new MineFragment());
-        fragments.add(new CommunityFragment());
+        fragments.add(DiscoverFragment.newInstance());
+        fragments.add(MineFragment.newInstance());
+        fragments.add(CommunityFragment.newInstance());
         MainViewPaperAdapter adapter=new MainViewPaperAdapter(requireActivity(),fragments);
         mViewPaper2.setAdapter(adapter);
 
@@ -170,7 +192,7 @@ public class MainFragment extends Fragment implements View.OnClickListener{
                     Fragment fragment=LoginFragment.newInstance();
                     FragmentTransaction transaction= fragmentManager.beginTransaction();
                     transaction.add(R.id.included_interface,fragment);
-                    transaction.remove(this);
+                    transaction.hide(this);
                     transaction.commit();
                 }
                 break;
@@ -182,11 +204,37 @@ public class MainFragment extends Fragment implements View.OnClickListener{
                     editor.remove(ARG_LOGIN_BEAN);
                     editor.apply();
 
-
+                    cancelLogin();
                     initLoginInfo();
                 }
                 break;
 
         }
+    }
+
+    private void cancelLogin(){
+        String address="http://redrock.udday.cn:2022/logout";
+        HttpUtil.sendOkHttpRequest(address, new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                e.printStackTrace();
+                requireActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(requireContext(),"网络请求失败",Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                requireActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(requireContext(),"取消登录成功",Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
     }
 }

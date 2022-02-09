@@ -3,10 +3,12 @@ package com.example.couldmusic.util;
 import android.util.Log;
 
 import com.example.couldmusic.bean.BannerBean;
+import com.example.couldmusic.bean.CheckMusicBean;
 import com.example.couldmusic.bean.HomePageBean;
 import com.example.couldmusic.bean.LoginBean;
 import com.example.couldmusic.bean.PlayListDetailBean;
 import com.example.couldmusic.bean.RecommendListBean;
+import com.example.couldmusic.bean.SongUrlBean;
 import com.example.couldmusic.bean.SongsDetailBean;
 import com.google.gson.Gson;
 
@@ -76,4 +78,26 @@ public class Utility {
         return null;
     }
 
+    public static CheckMusicBean handleCheckMusicInfo(String response){
+        try {
+            JSONObject jsonObject=new JSONObject(response);
+            String info=jsonObject.toString();
+            return new Gson().fromJson(info,CheckMusicBean.class);
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+        return null;
+
+    }
+
+    public static SongUrlBean handleSongUrlInfo(String response){
+        try {
+            JSONObject jsonObject=new JSONObject(response);
+            String info=jsonObject.toString();
+            return new Gson().fromJson(info, SongUrlBean.class);
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

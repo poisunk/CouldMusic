@@ -1,7 +1,10 @@
-package com.example.couldmusic.playlist;
+package com.example.couldmusic.list.view;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -20,11 +24,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.couldmusic.R;
+import com.example.couldmusic.bean.CheckMusicBean;
 import com.example.couldmusic.bean.PlayListDetailBean;
 import com.example.couldmusic.bean.RecommendListBean;
 import com.example.couldmusic.bean.SongsDetailBean;
+import com.example.couldmusic.main.fragment.MainFragment;
 import com.example.couldmusic.main.model.OnItemClickListener;
-import com.example.couldmusic.playlist.adapter.ListSongsAdapter;
+import com.example.couldmusic.list.adapter.ListSongsAdapter;
+import com.example.couldmusic.music.MusicFragment;
 import com.example.couldmusic.util.HttpUtil;
 import com.example.couldmusic.util.Utility;
 import com.example.couldmusic.widget.ListCover;
@@ -40,8 +47,13 @@ import okhttp3.Response;
 
 public class ListFragment extends Fragment implements View.OnClickListener {
 
+    @SuppressLint("StaticFieldLeak")
+    private static ListFragment listFragment=new ListFragment();
+
     private RecommendListBean.Creatives creatives;
     private String listId;
+
+    private boolean isProgress=false;
 
     private TextView tvBarName;
     private TextView tvListName;
@@ -51,25 +63,36 @@ public class ListFragment extends Fragment implements View.OnClickListener {
     private ListCover mListCover;
     private RecyclerView mRecyclerView;
 
-    public ListFragment(String id){
-        this.listId=id;
+    public static ListFragment newInstance(){
+        return listFragment;
     }
+
+    public static ListFragment getInstance(){
+        return listFragment;
+    }
+
+    public ListFragment(){
+
+    }
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Bundle args=getArguments();
         if(args!=null){
             Serializable obj = args.getSerializable("listBean");
             if (obj instanceof RecommendListBean.Creatives){
                 creatives=(RecommendListBean.Creatives) obj;
             }
+            args.clear();
         }
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_play_list,container,false);
     }
 
@@ -79,6 +102,29 @@ public class ListFragment extends Fragment implements View.OnClickListener {
         initView(view);
         initEvent();
         load();
+    }
+
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if(!hidden) {
+            Bundle args = getArguments();
+            if (args != null) {
+                Serializable obj = args.getSerializable("listBean");
+                if (obj instanceof RecommendListBean.Creatives) {
+                    creatives = (RecommendListBean.Creatives) obj;
+                }
+                args.clear();
+            }
+            if (creatives != null) {
+                mListCover.setPlayCount(creatives.getResources().get(0).getResourceExtInfo().getPlayCount());
+                mListCover.setImage(requireContext(), creatives.getUiElement().getImage().getImageUrl());
+                tvListName.setText(creatives.getUiElement().getMainTitle().getTitle());
+                listId = creatives.getCreativeId();
+            }
+            load();
+        }
     }
 
     private void initView(View v){
@@ -94,6 +140,7 @@ public class ListFragment extends Fragment implements View.OnClickListener {
             mListCover.setPlayCount(creatives.getResources().get(0).getResourceExtInfo().getPlayCount());
             mListCover.setImage(requireContext(),creatives.getUiElement().getImage().getImageUrl());
             tvListName.setText(creatives.getUiElement().getMainTitle().getTitle());
+            listId=creatives.getCreativeId();
         }
     }
 
@@ -103,6 +150,7 @@ public class ListFragment extends Fragment implements View.OnClickListener {
 
 
     private void load(){
+        isProgress=true;
         String address="http://redrock.udday.cn:2022/playlist/detail?id="+listId+"&s=0";
         HttpUtil.sendOkHttpRequest(address, new Callback() {
             @Override
@@ -152,6 +200,7 @@ public class ListFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void run() {
                         Toast.makeText(requireContext(),"网络请求失败",Toast.LENGTH_SHORT).show();
+                        isProgress=false;
                     }
                 });
             }
@@ -163,32 +212,79 @@ public class ListFragment extends Fragment implements View.OnClickListener {
                 requireActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ListSongsAdapter adapter=new ListSongsAdapter(songsDetailBean.getSongs());
-                        adapter.setOnItemClickListener(new OnItemClickListener() {
-                            @Override
-                            public void onItemClick(View view, int position) {
-
-                            }
-                        });
-                        mRecyclerView.setAdapter(adapter);
-                        LinearLayoutManager manager=new LinearLayoutManager(requireContext());
-                        mRecyclerView.setLayoutManager(manager);
+                        if(songsDetailBean!=null) {
+                            ListSongsAdapter adapter = new ListSongsAdapter(songsDetailBean.getSongs());
+                            adapter.setOnItemClickListener(new OnItemClickListener() {
+                                @Override
+                                public void onItemClick(View view, int position) {
+                                    playMusic(position, songsDetailBean.getSongs());
+                                }
+                            });
+                            mRecyclerView.setAdapter(adapter);
+                            LinearLayoutManager manager = new LinearLayoutManager(requireContext());
+                            mRecyclerView.setLayoutManager(manager);
+                            isProgress=false;
+                        }
                     }
                 });
             }
         });
     }
 
+    private void playMusic(int position, List<SongsDetailBean.Song> songs){
+        String address="http://redrock.udday.cn:2022/check/music?id="+songs.get(position).getId();
+        HttpUtil.sendOkHttpRequest(address, new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                e.printStackTrace();
+                requireActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(requireContext(),"网络请求失败",Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
 
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                final String responseText= Objects.requireNonNull(response.body()).string();
+                final CheckMusicBean checkMusicBean=Utility.handleCheckMusicInfo(responseText);
+                requireActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(checkMusicBean.isSuccess()){
+                            FragmentManager manager=requireActivity().getSupportFragmentManager();
+                            FragmentTransaction transaction=manager.beginTransaction();
+                            transaction.show(MusicFragment.newInstance(songs,position));
+                            transaction.hide(ListFragment.getInstance());
+                            transaction.commit();
+                        }else {
+                            AlertDialog.Builder builder=new AlertDialog.Builder(requireContext());
+                            builder.setTitle("提示");
+                            builder.setMessage(checkMusicBean.getMessage());
+                            builder.setNegativeButton("确定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            });
+                            builder.show();
+                        }
+                    }
+                });
+            }
+        });
+    }
     @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.fragment_play_list_back_button:
-                FragmentManager manager=requireActivity().getSupportFragmentManager();
-                FragmentTransaction transaction=manager.beginTransaction();
-                transaction.remove(this);
-                transaction.commit();
+                if(!isProgress) {
+                    FragmentManager manager = requireActivity().getSupportFragmentManager();
+                    FragmentTransaction transaction = manager.beginTransaction();
+                    transaction.remove(this).show(MainFragment.getInstance()).commit();
+                }
                 break;
         }
     }

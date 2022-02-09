@@ -11,4 +11,5 @@
     <color name="background_gray">#F1F1F1</color>
     <color name="background_shadow_gray">#869E9E9E</color>
     <color name="deep_gray">#808080</color>
+    <color name="NULL">#00FFFFFF</color>
 </resources>

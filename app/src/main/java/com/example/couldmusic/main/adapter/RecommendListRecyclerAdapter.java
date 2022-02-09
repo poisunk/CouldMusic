@@ -38,6 +38,7 @@ public class RecommendListRecyclerAdapter extends RecyclerView.Adapter<Recommend
     public void onBindViewHolder(@NonNull RecommendListRecyclerAdapter.InnerHolder holder, int position) {
         Glide.with(fragment.requireContext()).load(bean.getCreatives().get(position).getUiElement().getImage().getImageUrl())
                 .into(holder.mImageView);
+        holder.mCount.setVisibility(View.VISIBLE);
         holder.mCount.setText(countString(bean.getCreatives().get(position).getResources().get(0).getResourceExtInfo().getPlayCount()));
         holder.mTitle.setText(bean.getCreatives().get(position).getUiElement().getMainTitle().getTitle());
     }

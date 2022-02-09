@@ -1,4 +1,4 @@
-package com.example.couldmusic.playlist.adapter;
+package com.example.couldmusic.list.adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;

@@ -13,6 +13,18 @@ import com.example.couldmusic.R;
 
 public class CommunityFragment extends Fragment {
 
+    private static CommunityFragment communityFragment=new CommunityFragment();
+
+
+    public static CommunityFragment newInstance(){
+        communityFragment=new CommunityFragment();
+        return communityFragment;
+    }
+
+    public CommunityFragment getInstance(){
+        return communityFragment;
+    }
+
     public CommunityFragment(){
 
     }

@@ -23,7 +23,7 @@ import com.example.couldmusic.bean.HomePageBean;
 import com.example.couldmusic.bean.RecommendListBean;
 import com.example.couldmusic.main.adapter.RecommendListRecyclerAdapter;
 import com.example.couldmusic.main.model.OnItemClickListener;
-import com.example.couldmusic.playlist.ListFragment;
+import com.example.couldmusic.list.view.ListFragment;
 import com.example.couldmusic.util.HttpUtil;
 import com.example.couldmusic.util.Utility;
 import com.youth.banner.Banner;
@@ -41,6 +41,8 @@ import okhttp3.Response;
 
 public class DiscoverFragment extends Fragment implements View.OnClickListener{
 
+    private static DiscoverFragment discoverFragment=new DiscoverFragment();
+
     private final GlideImageLoader glideImageLoader=new GlideImageLoader();
     private final List<String> bannerImagePath=new ArrayList<>();
 
@@ -50,6 +52,15 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener{
     private Banner mBanner;
 
 
+
+    public static DiscoverFragment newInstance() {
+        discoverFragment=new DiscoverFragment();
+        return discoverFragment;
+    }
+
+    public DiscoverFragment getInstance(){
+        return discoverFragment;
+    }
 
     public DiscoverFragment(){
 
@@ -73,9 +84,16 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mSwipeRefresh.setRefreshing(true);
         load();
     }
 
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        mSwipeRefresh.setRefreshing(true);
+        load();
+    }
 
     private void initView(View v){
         mSwipeRefresh=v.findViewById(R.id.swipe_discover);
@@ -140,16 +158,15 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener{
             @Override
             public void onItemClick(View view, int position) {
                 FragmentManager manager= requireActivity().getSupportFragmentManager();
-                Fragment fragment=manager.findFragmentById(R.id.fragment_play_list);
-                if (fragment==null){
-                    fragment=new ListFragment(recommendListBean.getCreatives().get(position).getCreativeId());
-                }
+                FragmentTransaction transaction=manager.beginTransaction();
+                ListFragment fragment=ListFragment.newInstance();
                 Bundle args=new Bundle();
                 args.putSerializable("listBean",recommendListBean.getCreatives().get(position));
                 fragment.setArguments(args);
-                FragmentTransaction transaction=manager.beginTransaction();
-                transaction.replace(R.id.fragment_content_main,fragment);
-                transaction.commit();
+                transaction.add(R.id.included_interface,fragment);
+                transaction.hide(MainFragment.getInstance())
+                        .show(fragment)
+                        .commit();
             }
         });
         mRecyclerView.setAdapter(adapter);

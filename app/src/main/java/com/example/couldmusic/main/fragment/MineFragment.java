@@ -13,6 +13,17 @@ import com.example.couldmusic.R;
 
 public class MineFragment extends Fragment {
 
+    private static MineFragment mineFragment=new MineFragment();
+
+    public static MineFragment newInstance(){
+        mineFragment=new MineFragment();
+        return mineFragment;
+    }
+
+    public MineFragment getInstance(){
+        return mineFragment;
+    }
+
     public MineFragment(){
 
     }

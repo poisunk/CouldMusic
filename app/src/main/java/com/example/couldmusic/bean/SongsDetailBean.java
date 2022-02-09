@@ -2,8 +2,9 @@ package com.example.couldmusic.bean;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
-public class SongsDetailBean implements Serializable {
+public class SongsDetailBean {
 
     private List<Song> songs;
 
@@ -119,7 +120,6 @@ public class SongsDetailBean implements Serializable {
         private int djId;
         private int copyright;
         private int s_id;
-        private int mark;
         private int originCoverType;
         private Object originSongSimpleData;
         private Object tagPicList;
@@ -353,13 +353,6 @@ public class SongsDetailBean implements Serializable {
             this.s_id = s_id;
         }
 
-        public int getMark() {
-            return mark;
-        }
-
-        public void setMark(int mark) {
-            this.mark = mark;
-        }
 
         public int getOriginCoverType() {
             return originCoverType;
@@ -700,5 +693,31 @@ public class SongsDetailBean implements Serializable {
             }
 
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Song song = (Song) o;
+            return id == song.id && name.equals(song.name);
+        }
+
+
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SongsDetailBean that = (SongsDetailBean) o;
+
+        if(that.getSongs().size()!=this.getSongs().size())return false;
+        for(int i=0;i<that.getSongs().size();i++){
+            if(that.getSongs().get(i).getId()!=this.getSongs().get(i).getId()){
+                return false;
+            }
+        }
+        return true;
+    }
+
 }
