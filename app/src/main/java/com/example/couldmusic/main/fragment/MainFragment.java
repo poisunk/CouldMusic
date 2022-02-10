@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -28,6 +29,7 @@ import com.example.couldmusic.bean.LoginBean;
 import com.example.couldmusic.bean.SongsDetailBean;
 import com.example.couldmusic.login.view.LoginFragment;
 import com.example.couldmusic.main.adapter.MainViewPaperAdapter;
+import com.example.couldmusic.search.SearchFragment;
 import com.example.couldmusic.util.HttpUtil;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.tabs.TabLayout;
@@ -61,7 +63,7 @@ public class MainFragment extends Fragment implements View.OnClickListener{
     private TabLayout mTabLayout;
 
 
-
+    private CardView cvSearch;
     private MaterialButton mbCancelLogin;
     private TextView tvLoginUser;
     private CircleImageView civLoginUser;
@@ -136,11 +138,13 @@ public class MainFragment extends Fragment implements View.OnClickListener{
         llMenuBar= v.findViewById(R.id.content_left_menu_bar);
         mViewPaper2= v.findViewById(R.id.content_main_view_paper2);
         mTabLayout= v.findViewById(R.id.content_main_tab_layout);
+        cvSearch=v.findViewById(R.id.fragment_content_main_search);
     }
 
     private void initEvent(){
         llMenuBar.setOnClickListener(this);
         mbCancelLogin.setOnClickListener(this);
+        cvSearch.setOnClickListener(this);
         initDrawerLayout();
     }
 
@@ -207,6 +211,13 @@ public class MainFragment extends Fragment implements View.OnClickListener{
                     cancelLogin();
                     initLoginInfo();
                 }
+                break;
+            case R.id.fragment_content_main_search:
+                FragmentManager manager=requireActivity().getSupportFragmentManager();
+                FragmentTransaction transaction=manager.beginTransaction();
+                transaction.add(R.id.included_interface, SearchFragment.getInstance());
+                transaction.hide(this);
+                transaction.commit();
                 break;
 
         }

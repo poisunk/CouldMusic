@@ -10,5 +10,6 @@
     <string name="cancel_login">取消登录</string>
     <string name="recommend_list">推荐歌单></string>
     <string name="list">歌单</string>
+    <string name="search">搜索</string>
 
 </resources>

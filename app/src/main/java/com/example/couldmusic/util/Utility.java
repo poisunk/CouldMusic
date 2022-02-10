@@ -8,6 +8,8 @@ import com.example.couldmusic.bean.HomePageBean;
 import com.example.couldmusic.bean.LoginBean;
 import com.example.couldmusic.bean.PlayListDetailBean;
 import com.example.couldmusic.bean.RecommendListBean;
+import com.example.couldmusic.bean.SearchHotBean;
+import com.example.couldmusic.bean.SearchSuggestBean;
 import com.example.couldmusic.bean.SongUrlBean;
 import com.example.couldmusic.bean.SongsDetailBean;
 import com.google.gson.Gson;
@@ -100,4 +102,29 @@ public class Utility {
         }
         return null;
     }
+
+    public static SearchHotBean handleSearchHotInfo(String response){
+        try {
+            JSONObject jsonObject=new JSONObject(response);
+            JSONObject result=jsonObject.getJSONObject("result");
+            String info=result.toString();
+            return new Gson().fromJson(info, SearchHotBean.class);
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+        return null;
+
+    }
+
+    public static SearchSuggestBean handleSearchSuggestInfo(String response){
+        try {
+            JSONObject jsonObject=new JSONObject(response);
+            String info=jsonObject.toString();
+            return new Gson().fromJson(info, SearchSuggestBean.class);
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }
