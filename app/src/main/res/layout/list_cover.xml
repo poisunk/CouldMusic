@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/item_list_cover"
+    android:id="@+id/list_cover"
     android:layout_margin="9dp"
     android:layout_width="100dp"
     android:layout_height="146dp">
@@ -38,6 +38,7 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="3dp"
                 android:textSize="11sp"
+                android:textColor="@color/white"
                 android:padding="3sp"
                 android:visibility="gone"
                 app:drawableStartCompat="@drawable/ic_baseline_play_circle_filled_24" />

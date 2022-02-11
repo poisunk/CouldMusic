@@ -30,7 +30,7 @@ public class RecommendListRecyclerAdapter extends RecyclerView.Adapter<Recommend
     @NonNull
     @Override
     public RecommendListRecyclerAdapter.InnerHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new InnerHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_cover,
+        return new InnerHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_cover,
                 parent, false),mClickListener);
     }
 
@@ -59,7 +59,7 @@ public class RecommendListRecyclerAdapter extends RecyclerView.Adapter<Recommend
         public InnerHolder(@NonNull View itemView, OnItemClickListener listener){
             super(itemView);
             this.listener = listener;
-            mFrameLayout=itemView.findViewById(R.id.item_list_cover);
+            mFrameLayout=itemView.findViewById(R.id.list_cover);
             mImageView=itemView.findViewById(R.id.item_list_cover_pic);
             mCount=itemView.findViewById(R.id.item_list_cover_count);
             mTitle=itemView.findViewById(R.id.item_list_cover_title);

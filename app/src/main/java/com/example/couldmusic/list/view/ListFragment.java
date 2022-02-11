@@ -3,6 +3,9 @@ package com.example.couldmusic.list.view;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -10,12 +13,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -32,6 +37,7 @@ import com.example.couldmusic.main.fragment.MainFragment;
 import com.example.couldmusic.main.model.OnItemClickListener;
 import com.example.couldmusic.list.adapter.ListSongsAdapter;
 import com.example.couldmusic.music.MusicFragment;
+import com.example.couldmusic.util.BitmapUtil;
 import com.example.couldmusic.util.HttpUtil;
 import com.example.couldmusic.util.Utility;
 import com.example.couldmusic.widget.ListCover;
@@ -50,11 +56,13 @@ public class ListFragment extends Fragment implements View.OnClickListener {
     @SuppressLint("StaticFieldLeak")
     private static ListFragment listFragment=new ListFragment();
 
-    private RecommendListBean.Creatives creatives;
+    private Fragment previousFragment;
+
     private String listId;
 
     private boolean isProgress=false;
 
+    private LinearLayout mBackground;
     private TextView tvBarName;
     private TextView tvListName;
     private TextView tvCreatorName;
@@ -63,7 +71,9 @@ public class ListFragment extends Fragment implements View.OnClickListener {
     private ListCover mListCover;
     private RecyclerView mRecyclerView;
 
-    public static ListFragment newInstance(){
+    public static ListFragment newInstance(String id,Fragment fragment){
+        listFragment.setPreviousFragment(fragment);
+        listFragment.setListId(id);
         return listFragment;
     }
 
@@ -85,14 +95,6 @@ public class ListFragment extends Fragment implements View.OnClickListener {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Bundle args=getArguments();
-        if(args!=null){
-            Serializable obj = args.getSerializable("listBean");
-            if (obj instanceof RecommendListBean.Creatives){
-                creatives=(RecommendListBean.Creatives) obj;
-            }
-            args.clear();
-        }
         return inflater.inflate(R.layout.fragment_play_list,container,false);
     }
 
@@ -109,25 +111,12 @@ public class ListFragment extends Fragment implements View.OnClickListener {
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if(!hidden) {
-            Bundle args = getArguments();
-            if (args != null) {
-                Serializable obj = args.getSerializable("listBean");
-                if (obj instanceof RecommendListBean.Creatives) {
-                    creatives = (RecommendListBean.Creatives) obj;
-                }
-                args.clear();
-            }
-            if (creatives != null) {
-                mListCover.setPlayCount(creatives.getResources().get(0).getResourceExtInfo().getPlayCount());
-                mListCover.setImage(requireContext(), creatives.getUiElement().getImage().getImageUrl());
-                tvListName.setText(creatives.getUiElement().getMainTitle().getTitle());
-                listId = creatives.getCreativeId();
-            }
             load();
         }
     }
 
     private void initView(View v){
+        mBackground=v.findViewById(R.id.fragment_play_list);
         tvBarName=v.findViewById(R.id.fragment_play_list_bar_name);
         tvCreatorName=v.findViewById(R.id.fragment_play_list_creator_name);
         tvListName=v.findViewById(R.id.fragment_play_list_name);
@@ -136,12 +125,6 @@ public class ListFragment extends Fragment implements View.OnClickListener {
         mListCover=v.findViewById(R.id.fragment_play_list_list_cover);
         mRecyclerView=v.findViewById(R.id.fragment_play_list_recycler);
 
-        if (creatives!=null){
-            mListCover.setPlayCount(creatives.getResources().get(0).getResourceExtInfo().getPlayCount());
-            mListCover.setImage(requireContext(),creatives.getUiElement().getImage().getImageUrl());
-            tvListName.setText(creatives.getUiElement().getMainTitle().getTitle());
-            listId=creatives.getCreativeId();
-        }
     }
 
     private void initEvent(){
@@ -160,6 +143,7 @@ public class ListFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void run() {
                         Toast.makeText(requireContext(),"网络请求失败",Toast.LENGTH_SHORT).show();
+                        isProgress=false;
                     }
                 });
             }
@@ -172,11 +156,47 @@ public class ListFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void run() {
                         if (playListDetailBean!=null) {
-                            tvCreatorName.setText(playListDetailBean.getCreator().getNickname());
-                            Glide.with(requireContext()).load(playListDetailBean.getCreator().getAvatarUrl())
-                                    .into(ivCreatorImage);
+                            showListInfo(playListDetailBean);
+
                             loadListDetail(playListDetailBean);
+                        }else {
+                            Toast.makeText(requireContext(),"网络请求失败",Toast.LENGTH_SHORT).show();
                         }
+                        isProgress=false;
+                    }
+                });
+            }
+        });
+    }
+
+    private void showListInfo(PlayListDetailBean playListDetailBean){
+        mListCover.setImage(playListDetailBean.getCoverImgUrl());
+        mListCover.setPlayCount(playListDetailBean.getPlayCount());
+        tvListName.setText(playListDetailBean.getName());
+        tvCreatorName.setText(playListDetailBean.getCreator().getNickname());
+        Glide.with(requireContext()).load(playListDetailBean.getCreator().getAvatarUrl())
+                .into(ivCreatorImage);
+        HttpUtil.sendOkHttpRequest(playListDetailBean.getCoverImgUrl(), new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                e.printStackTrace();
+                requireActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(requireContext(),"网络请求失败",Toast.LENGTH_SHORT).show();
+                        isProgress=false;
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                final byte[] responseBytes= Objects.requireNonNull(response.body()).bytes();
+                final Bitmap bitmap= BitmapFactory.decodeByteArray(responseBytes,0,responseBytes.length);
+                requireActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mBackground.setBackground(new BitmapDrawable(BitmapUtil.blurBitmap(bitmap,requireContext())));
                     }
                 });
             }
@@ -212,6 +232,7 @@ public class ListFragment extends Fragment implements View.OnClickListener {
                 requireActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        isProgress=false;
                         if(songsDetailBean!=null) {
                             ListSongsAdapter adapter = new ListSongsAdapter(songsDetailBean.getSongs());
                             adapter.setOnItemClickListener(new OnItemClickListener() {
@@ -223,7 +244,6 @@ public class ListFragment extends Fragment implements View.OnClickListener {
                             mRecyclerView.setAdapter(adapter);
                             LinearLayoutManager manager = new LinearLayoutManager(requireContext());
                             mRecyclerView.setLayoutManager(manager);
-                            isProgress=false;
                         }
                     }
                 });
@@ -278,14 +298,22 @@ public class ListFragment extends Fragment implements View.OnClickListener {
     @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.fragment_play_list_back_button:
-                if(!isProgress) {
+        if(!isProgress) {
+            switch (v.getId()) {
+                case R.id.fragment_play_list_back_button:
                     FragmentManager manager = requireActivity().getSupportFragmentManager();
                     FragmentTransaction transaction = manager.beginTransaction();
-                    transaction.remove(this).show(MainFragment.getInstance()).commit();
-                }
-                break;
+                    transaction.remove(this).show(previousFragment).commit();
+                    break;
+            }
         }
+    }
+
+    public void setListId(String listId) {
+        this.listId = listId;
+    }
+
+    public void setPreviousFragment(Fragment previousFragment) {
+        this.previousFragment = previousFragment;
     }
 }

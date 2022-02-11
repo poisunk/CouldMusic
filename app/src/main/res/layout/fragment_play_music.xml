@@ -34,7 +34,7 @@
                 android:layout_weight="1"
                 android:lines="1"
                 android:ellipsize="end"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:textSize="17sp"
                 android:gravity="center"/>
 

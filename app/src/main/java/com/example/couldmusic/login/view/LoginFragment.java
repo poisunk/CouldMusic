@@ -49,7 +49,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
         return loginFragment;
     }
 
-    public LoginFragment getInstance(){
+    public static LoginFragment getInstance(){
         return loginFragment;
     }
 

@@ -5,43 +5,49 @@
     android:layout_width="match_parent"
     android:layout_height="50dp">
 
+
+
     <TextView
         android:id="@+id/item_play_list_song_num"
         android:layout_width="60dp"
         android:layout_height="wrap_content"
         android:textColor="@color/deep_gray"
         android:textSize="18sp"
-        android:layout_gravity="center_vertical"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:layout_gravity="center_vertical"/>
+
+
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical">
 
-        <TextView
-            android:id="@+id/item_play_list_song_name"
-            android:layout_width="match_parent"
-            android:layout_height="25dp"
-            android:layout_weight="1"
-            android:lines="1"
-            android:ellipsize="end"
-            android:gravity="start"
-            android:textSize="16sp"
-            android:layout_marginEnd="30dp"
-            android:textColor="@color/black"/>
 
-        <TextView
-            android:id="@+id/item_play_list_song_ar"
-            android:layout_width="match_parent"
-            android:layout_height="25dp"
-            android:layout_weight="1"
-            android:lines="1"
-            android:ellipsize="end"
-            android:gravity="start"
-            android:textSize="16sp"
-            android:layout_marginEnd="30dp"
-            android:textColor="@color/deep_gray"/>
+            <TextView
+                android:id="@+id/item_play_list_song_name"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:lines="1"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:textSize="16sp"
+                android:layout_marginEnd="30dp"
+                android:textColor="@color/black"/>
+
+            <TextView
+                android:id="@+id/item_play_list_song_ar"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:lines="1"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:textSize="16sp"
+                android:layout_marginEnd="30dp"
+                android:textColor="@color/deep_gray"
+                />
+
 
     </LinearLayout>
 

@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/swipe_mine"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/background_gray">
 
-    <com.example.couldmusic.widget.MyNestedScrollLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:overScrollMode="never">
@@ -12,31 +14,97 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:weightSum="3">
+            android:layout_height="match_parent">
 
 
-            <include layout="@layout/item_user_info"/>
-
-            <LinearLayout
-                android:orientation="vertical"
+            <com.example.couldmusic.widget.UserInfo
+                android:id="@+id/fragment_mine_user_info"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                >
+                android:layout_height="wrap_content"/>
 
-                <com.google.android.material.tabs.TabLayout
+            <androidx.cardview.widget.CardView
+                android:id="@+id/fragment_mine_love_list"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="20dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp">
+
+                <LinearLayout
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
 
-                <androidx.viewpager2.widget.ViewPager2
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="10dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="15dp">
+
+                        <ImageView
+                            android:id="@+id/fragment_mine_love_list_cover"
+                            android:layout_width="55dp"
+                            android:layout_height="55dp" />
+                    </androidx.cardview.widget.CardView>
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="15dp">
+
+                        <TextView
+                            android:id="@+id/fragment_mine_love_list_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="20dp"
+                            android:textColor="@color/black"
+                            android:textSize="16sp"
+                            android:gravity="center_vertical"/>
+
+                        <TextView
+                            android:id="@+id/fragment_mine_love_list_info"
+                            android:layout_width="match_parent"
+                            android:layout_height="20dp"
+                            android:textColor="@color/deep_gray"
+                            android:textSize="11sp"
+                            android:gravity="center_vertical"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="20dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp">
+
+                <LinearLayout
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"/>
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp">
 
-            </LinearLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/fragment_mine_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:overScrollMode="never"
+                        />
+
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
         </LinearLayout>
 
 
-    </com.example.couldmusic.widget.MyNestedScrollLayout>
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

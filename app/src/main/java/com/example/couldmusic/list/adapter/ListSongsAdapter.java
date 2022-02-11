@@ -33,15 +33,17 @@ public class ListSongsAdapter extends RecyclerView.Adapter<ListSongsAdapter.Inne
 
     @Override
     public void onBindViewHolder(@NonNull ListSongsAdapter.InnerHolder holder, int position) {
-        holder.tvNum.setText(String.valueOf(position+1));
+
+        holder.tvNum.setText(String.valueOf(position + 1));
         holder.tvName.setText(songs.get(position).getName());
-        String ar=songs.get(position).getAl().getName()+"-";
-        int num=songs.get(position).getAr().size()-1;
-        for(int i=0;i<num;i++){
-            ar=ar+songs.get(position).getAr().get(i).getName()+",";
+        String ar = songs.get(position).getAl().getName() + "-";
+        int num = songs.get(position).getAr().size() - 1;
+        for (int i = 0; i < num; i++) {
+            ar = ar + songs.get(position).getAr().get(i).getName() + ",";
         }
-        ar=ar+songs.get(position).getAr().get(num).getName();
+        ar = ar + songs.get(position).getAr().get(num).getName();
         holder.tvAr.setText(ar);
+
     }
 
     @Override
@@ -55,6 +57,7 @@ public class ListSongsAdapter extends RecyclerView.Adapter<ListSongsAdapter.Inne
         TextView tvNum;
         TextView tvName;
         TextView tvAr;
+
         private OnItemClickListener mClickListener;
 
         public InnerHolder(@NonNull View itemView, OnItemClickListener listener) {

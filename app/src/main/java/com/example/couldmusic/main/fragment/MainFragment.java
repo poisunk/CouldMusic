@@ -26,10 +26,9 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.bumptech.glide.Glide;
 import com.example.couldmusic.R;
 import com.example.couldmusic.bean.LoginBean;
-import com.example.couldmusic.bean.SongsDetailBean;
 import com.example.couldmusic.login.view.LoginFragment;
 import com.example.couldmusic.main.adapter.MainViewPaperAdapter;
-import com.example.couldmusic.search.SearchFragment;
+import com.example.couldmusic.search.view.SearchFragment;
 import com.example.couldmusic.util.HttpUtil;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.tabs.TabLayout;
@@ -111,6 +110,7 @@ public class MainFragment extends Fragment implements View.OnClickListener{
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view,savedInstanceState);
         initLoginInfo();
     }
 
@@ -150,7 +150,7 @@ public class MainFragment extends Fragment implements View.OnClickListener{
 
     private void initPage(){
         fragments.add(DiscoverFragment.newInstance());
-        fragments.add(MineFragment.newInstance());
+        fragments.add(MineFragment.newInstance(mLoginBean));
         fragments.add(CommunityFragment.newInstance());
         MainViewPaperAdapter adapter=new MainViewPaperAdapter(requireActivity(),fragments);
         mViewPaper2.setAdapter(adapter);

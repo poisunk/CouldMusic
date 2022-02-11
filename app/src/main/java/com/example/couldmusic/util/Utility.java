@@ -6,12 +6,15 @@ import com.example.couldmusic.bean.BannerBean;
 import com.example.couldmusic.bean.CheckMusicBean;
 import com.example.couldmusic.bean.HomePageBean;
 import com.example.couldmusic.bean.LoginBean;
+import com.example.couldmusic.bean.LoginStatusBean;
 import com.example.couldmusic.bean.PlayListDetailBean;
 import com.example.couldmusic.bean.RecommendListBean;
 import com.example.couldmusic.bean.SearchHotBean;
 import com.example.couldmusic.bean.SearchSuggestBean;
 import com.example.couldmusic.bean.SongUrlBean;
 import com.example.couldmusic.bean.SongsDetailBean;
+import com.example.couldmusic.bean.UserDetailBean;
+import com.example.couldmusic.bean.UserPlayListBean;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -121,6 +124,42 @@ public class Utility {
             JSONObject jsonObject=new JSONObject(response);
             String info=jsonObject.toString();
             return new Gson().fromJson(info, SearchSuggestBean.class);
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static LoginStatusBean handleLoginStatusInfo(String response){
+        try {
+            JSONObject jsonObject=new JSONObject(response);
+            String info=jsonObject.toString();
+            return new Gson().fromJson(info,LoginStatusBean.class);
+
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static UserDetailBean handleUserDetailInfo(String response){
+        try {
+            JSONObject jsonObject=new JSONObject(response);
+            String info=jsonObject.toString();
+            return new Gson().fromJson(info,UserDetailBean.class);
+
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static UserPlayListBean handleUserPlayListInfo(String response){
+        try {
+            JSONObject jsonObject=new JSONObject(response);
+            String info=jsonObject.toString();
+            return new Gson().fromJson(info,UserPlayListBean.class);
+
         }catch (JSONException e){
             e.printStackTrace();
         }

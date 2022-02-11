@@ -1,4 +1,4 @@
-package com.example.couldmusic.search;
+package com.example.couldmusic.search.view;
 
 import android.os.Bundle;
 import android.text.Editable;
@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,7 +40,6 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     }
 
     public SearchFragment(){
-
     }
 
     @Override
@@ -89,6 +89,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 Log.d(TAG,s.toString());
+
             }
 
             @Override
@@ -100,11 +101,13 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
             @Override
             public void afterTextChanged(Editable s) {
                 Log.d(TAG,"after");
+                showSuggest(s.toString());
             }
         });
         etSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                startSearch(v.getText().toString());
                 return false;
             }
         });
@@ -145,6 +148,17 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    private void startSearch(String s){
+        if(!isProgress){
+            Toast.makeText(requireContext(),s,Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void setSearchText(String s){
+        etSearch.setText(s);
+        startSearch(s);
+    }
+
     public boolean isProgress() {
         return isProgress;
     }
@@ -152,4 +166,5 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     public void setProgress(boolean progress) {
         isProgress = progress;
     }
+
 }

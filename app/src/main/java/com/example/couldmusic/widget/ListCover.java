@@ -3,7 +3,6 @@ package com.example.couldmusic.widget;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -24,7 +23,7 @@ public class ListCover extends FrameLayout {
 
     public ListCover(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        LayoutInflater.from(context).inflate(R.layout.item_list_cover,this);
+        LayoutInflater.from(context).inflate(R.layout.list_cover,this);
         mImageView=findViewById(R.id.item_list_cover_pic);
         mTextView=findViewById(R.id.item_list_cover_count);
         mTitle=findViewById(R.id.item_list_cover_title);
@@ -35,8 +34,8 @@ public class ListCover extends FrameLayout {
     }
 
 
-    public void setImage(Context context,String path){
-        Glide.with(context).load(path).into(mImageView);
+    public void setImage(String path){
+        Glide.with(this).load(path).into(mImageView);
     }
 
     public void setPlayCount(long count){

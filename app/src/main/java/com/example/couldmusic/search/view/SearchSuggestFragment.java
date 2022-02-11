@@ -1,4 +1,4 @@
-package com.example.couldmusic.search;
+package com.example.couldmusic.search.view;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -95,15 +95,19 @@ public class SearchSuggestFragment extends Fragment{
                     requireActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            List<Map<String, String>> mListItems = new ArrayList<>();
-                            for (SearchSuggestBean.Result.AllMatch allMatch : searchSuggestBean.getResult().getAllMatch()) {
-                                Map<String, String> map = new HashMap<>();
-                                map.put("suggest", allMatch.getKeyword());
-                                mListItems.add(map);
+                            if(searchSuggestBean!=null&&searchSuggestBean.getResult().getAllMatch()!=null) {
+                                List<Map<String, String>> mListItems = new ArrayList<>();
+                                for (SearchSuggestBean.Result.AllMatch allMatch : searchSuggestBean.getResult().getAllMatch()) {
+                                    Map<String, String> map = new HashMap<>();
+                                    map.put("suggest", allMatch.getKeyword());
+                                    mListItems.add(map);
+                                }
+                                SimpleAdapter adapter = new SimpleAdapter(requireContext(), mListItems, R.layout.item_search_suggest
+                                        , new String[]{"suggest"}, new int[]{R.id.item_search_suggest_text});
+                                mListView.setAdapter(adapter);
+                            }else{
+                                mListView.setAdapter(null);
                             }
-                            SimpleAdapter adapter = new SimpleAdapter(requireContext(), mListItems, R.layout.item_search_suggest
-                                    , new String[]{"suggest"}, new int[]{R.id.item_search_suggest_text});
-                            mListView.setAdapter(adapter);
                             isProgress=false;
                             SearchFragment.getInstance().setProgress(false);
                         }

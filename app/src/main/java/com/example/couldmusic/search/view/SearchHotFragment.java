@@ -1,24 +1,19 @@
-package com.example.couldmusic.search;
+package com.example.couldmusic.search.view;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.couldmusic.R;
 import com.example.couldmusic.bean.SearchHotBean;
-import com.example.couldmusic.main.fragment.MainFragment;
 import com.example.couldmusic.main.model.OnItemClickListener;
 import com.example.couldmusic.search.adapter.HotListRecyclerAdapter;
 import com.example.couldmusic.util.HttpUtil;
@@ -107,7 +102,7 @@ public class SearchHotFragment extends Fragment implements View.OnClickListener 
                         adapter.setOnItemClickListener(new OnItemClickListener() {
                             @Override
                             public void onItemClick(View view, int position) {
-
+                                SearchFragment.getInstance().setSearchText(searchHotBean.getHots().get(position).getFirst());
                             }
                         });
                         mRecycler.setAdapter(adapter);
