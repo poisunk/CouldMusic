@@ -692,6 +692,9 @@ public class SongsDetailBean {
                 this.size = size;
             }
 
+
+
+
         }
 
         @Override
@@ -702,7 +705,133 @@ public class SongsDetailBean {
             return id == song.id && name.equals(song.name);
         }
 
+        /**"artists": [
+         {
+         "id": 11127,
+         "name": "Beyond",
+         "picUrl": null,
+         "alias": [],
+         "albumSize": 0,
+         "picId": 0,
+         "img1v1Url": "https://p2.music.126.net/6y-UleORITEDbvrOLV0Q8A==/5639395138885805.jpg",
+         "img1v1": 0,
+         "trans": null
+         }
+         ],*/
 
+        private List<artists> artists;
+
+        public List<artists> getArtists() {
+            return artists;
+        }
+
+        public void setArtists(List<artists> artists) {
+            this.artists = artists;
+        }
+
+        public static class artists{
+            /**"id": 11127,
+             "name": "Beyond",
+             "picUrl": null,
+             "alias": [],
+             "albumSize": 0,
+             "picId": 0,
+             "img1v1Url": "https://p2.music.126.net/6y-UleORITEDbvrOLV0Q8A==/5639395138885805.jpg",
+             "img1v1": 0,
+             "trans": null*/
+
+            private String name;
+            private long id;
+
+            public String getName() {
+                return name;
+            }
+
+            public void setName(String name) {
+                this.name = name;
+            }
+
+            public long getId() {
+                return id;
+            }
+
+            public void setId(long id) {
+                this.id = id;
+            }
+        }
+
+        /**"album": {
+         "id": 34209,
+         "name": "海阔天空",
+         "artist": {
+         "id": 0,
+         "name": "",
+         "picUrl": null,
+         "alias": [],
+         "albumSize": 0,
+         "picId": 0,
+         "img1v1Url": "https://p2.music.126.net/6y-UleORITEDbvrOLV0Q8A==/5639395138885805.jpg",
+         "img1v1": 0,
+         "trans": null
+         },
+         "publishTime": 747504000000,
+         "size": 10,
+         "copyrightId": 1003,
+         "status": 1,
+         "picId": 109951165796899180,
+         "mark": 0
+         },*/
+
+        private album album;
+
+        public album getAlbum() {
+            return album;
+        }
+
+        public void setAlbum(album album) {
+            this.album = album;
+        }
+
+        public static class album{
+            /**"id": 34209,
+             "name": "海阔天空",
+             "artist": {
+             "id": 0,
+             "name": "",
+             "picUrl": null,
+             "alias": [],
+             "albumSize": 0,
+             "picId": 0,
+             "img1v1Url": "https://p2.music.126.net/6y-UleORITEDbvrOLV0Q8A==/5639395138885805.jpg",
+             "img1v1": 0,
+             "trans": null
+             },
+             "publishTime": 747504000000,
+             "size": 10,
+             "copyrightId": 1003,
+             "status": 1,
+             "picId": 109951165796899180,
+             "mark": 0*/
+
+            private long id;
+            private String name;
+
+            public long getId() {
+                return id;
+            }
+
+            public void setId(long id) {
+                this.id = id;
+            }
+
+            public String getName() {
+                return name;
+            }
+
+            public void setName(String name) {
+                this.name = name;
+            }
+        }
     }
 
     @Override

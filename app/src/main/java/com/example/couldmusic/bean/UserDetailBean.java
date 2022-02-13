@@ -123,7 +123,7 @@ public class UserDetailBean {
 
     public static class Profile{
         private boolean followed;
-        private int userId;
+        private long userId;
         private boolean defaultAvatar;
         private String avatarUrl;
         private String nickname;
@@ -164,11 +164,11 @@ public class UserDetailBean {
             this.followed = followed;
         }
 
-        public int getUserId() {
+        public long getUserId() {
             return userId;
         }
 
-        public void setUserId(int userId) {
+        public void setUserId(long userId) {
             this.userId = userId;
         }
 

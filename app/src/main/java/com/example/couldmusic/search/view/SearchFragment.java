@@ -69,6 +69,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         FragmentTransaction transaction=manager.beginTransaction();
         transaction.remove(SearchSuggestFragment.getInstance());
         transaction.remove(SearchHotFragment.getInstance());
+        transaction.remove(SearchResultFragment.getInstance());
         transaction.commit();
     }
 
@@ -79,8 +80,10 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         FragmentTransaction transaction=manager.beginTransaction();
         transaction.add(R.id.fragment_search_fragment,SearchSuggestFragment.getInstance());
         transaction.add(R.id.fragment_search_fragment,SearchHotFragment.getInstance());
+        transaction.add(R.id.fragment_search_fragment,SearchResultFragment.getInstance());
         transaction.show(SearchHotFragment.getInstance())
                 .hide(SearchSuggestFragment.getInstance())
+                .hide(SearchResultFragment.getInstance())
                 .commit();
     }
 
@@ -88,20 +91,19 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                Log.d(TAG,s.toString());
+
 
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.d(TAG,s.toString());
+
                 showSuggest(s.toString());
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                Log.d(TAG,"after");
-                showSuggest(s.toString());
+
             }
         });
         etSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -118,16 +120,19 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         if(s.equals("")){
             FragmentManager manager=requireActivity().getSupportFragmentManager();
             FragmentTransaction transaction=manager.beginTransaction();
-            transaction.hide(SearchSuggestFragment.getInstance());
-            transaction.show(SearchHotFragment.getInstance());
-            transaction.commit();
+            transaction.show(SearchHotFragment.getInstance())
+                    .hide(SearchSuggestFragment.getInstance())
+                    .hide(SearchResultFragment.getInstance())
+                    .commit();
+
         }else{
             FragmentManager manager=requireActivity().getSupportFragmentManager();
             FragmentTransaction transaction=manager.beginTransaction();
             SearchSuggestFragment.getInstance().loadSuggest(s);
-            transaction.show(SearchSuggestFragment.getInstance());
-            transaction.hide(SearchHotFragment.getInstance());
-            transaction.commit();
+            transaction.show(SearchSuggestFragment.getInstance())
+                    .hide(SearchHotFragment.getInstance())
+                    .hide(SearchResultFragment.getInstance())
+                    .commit();
         }
     }
 
@@ -149,8 +154,13 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     }
 
     private void startSearch(String s){
-        if(!isProgress){
-            Toast.makeText(requireContext(),s,Toast.LENGTH_SHORT).show();
+        if(!isProgress&& !s.equals("")){
+            FragmentManager manager=requireActivity().getSupportFragmentManager();
+            FragmentTransaction transaction=manager.beginTransaction();
+            transaction.show(SearchResultFragment.newInstance(s))
+                    .hide(SearchHotFragment.getInstance())
+                    .hide(SearchSuggestFragment.getInstance())
+                    .commit();
         }
     }
 

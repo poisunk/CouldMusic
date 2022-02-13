@@ -10,7 +10,9 @@ import com.example.couldmusic.bean.LoginStatusBean;
 import com.example.couldmusic.bean.PlayListDetailBean;
 import com.example.couldmusic.bean.RecommendListBean;
 import com.example.couldmusic.bean.SearchHotBean;
+import com.example.couldmusic.bean.SearchPlaylistBean;
 import com.example.couldmusic.bean.SearchSuggestBean;
+import com.example.couldmusic.bean.SearchUsersBean;
 import com.example.couldmusic.bean.SongUrlBean;
 import com.example.couldmusic.bean.SongsDetailBean;
 import com.example.couldmusic.bean.UserDetailBean;
@@ -130,17 +132,6 @@ public class Utility {
         return null;
     }
 
-    public static LoginStatusBean handleLoginStatusInfo(String response){
-        try {
-            JSONObject jsonObject=new JSONObject(response);
-            String info=jsonObject.toString();
-            return new Gson().fromJson(info,LoginStatusBean.class);
-
-        }catch (JSONException e){
-            e.printStackTrace();
-        }
-        return null;
-    }
 
     public static UserDetailBean handleUserDetailInfo(String response){
         try {
@@ -159,6 +150,42 @@ public class Utility {
             JSONObject jsonObject=new JSONObject(response);
             String info=jsonObject.toString();
             return new Gson().fromJson(info,UserPlayListBean.class);
+
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static SongsDetailBean handleSearchSongsDetailInfo(String response){
+        try {
+            JSONObject jsonObject=new JSONObject(response);
+            JSONObject result=jsonObject.getJSONObject("result");
+            String info=result.toString();
+            return new Gson().fromJson(info,SongsDetailBean.class);
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static SearchPlaylistBean handleSearchPlayListInfo(String response){
+        try {
+            JSONObject jsonObject=new JSONObject(response);
+            String info=jsonObject.toString();
+            return new Gson().fromJson(info,SearchPlaylistBean.class);
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+        return null;
+
+    }
+
+    public static SearchUsersBean handleSearchUsersBean(String response){
+        try {
+            JSONObject jsonObject=new JSONObject(response);
+            String info=jsonObject.toString();
+            return new Gson().fromJson(info,SearchUsersBean.class);
 
         }catch (JSONException e){
             e.printStackTrace();
