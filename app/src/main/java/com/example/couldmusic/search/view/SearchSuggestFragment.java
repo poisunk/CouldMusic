@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
@@ -109,6 +110,13 @@ public class SearchSuggestFragment extends Fragment{
                                 mListView.setAdapter(null);
                             }
                             isProgress=false;
+                            mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                    SearchFragment.getInstance().setSearchText(searchSuggestBean.getResult()
+                                            .getAllMatch().get(position).getKeyword());
+                                }
+                            });
                             SearchFragment.getInstance().setProgress(false);
                         }
                     });

@@ -1,11 +1,9 @@
 package com.example.couldmusic.search.view;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -18,7 +16,6 @@ import com.example.couldmusic.R;
 import com.example.couldmusic.bean.SearchPlaylistBean;
 import com.example.couldmusic.bean.SearchUsersBean;
 import com.example.couldmusic.bean.SongsDetailBean;
-import com.example.couldmusic.bean.UserPlayListBean;
 import com.example.couldmusic.search.adapter.ResultPlaylistListAdapter;
 import com.example.couldmusic.search.adapter.ResultSongsListAdapter;
 import com.example.couldmusic.search.adapter.ResultUserListAdapter;
@@ -43,14 +40,16 @@ public class SearchResultFragment extends Fragment {
 
     private static String TAG="SearchResult";
 
+    //确定搜索的关键词
     private String searchText;
 
     private String[] tabStr={"单曲","歌单","用户"};
-    private List<ArrayAdapter> adapters=new ArrayList<>();
+    private List<Fragment> fragments=new ArrayList<>(4);
 
     private TabLayout mTabLayout;
     private ViewPager2 mViewPager2;
     private ProgressBar mProgressBar;
+
 
     public static SearchResultFragment newInstance(String s){
         searchResultFragment.setSearchText(s);
@@ -80,7 +79,7 @@ public class SearchResultFragment extends Fragment {
         super.onHiddenChanged(hidden);
         if(!hidden){
             if(searchText!=null) {
-                loadSongs();
+                load();
             }
         }
     }
@@ -91,10 +90,14 @@ public class SearchResultFragment extends Fragment {
         mProgressBar=v.findViewById(R.id.fragment_search_result_progress_bar);
     }
 
-    private void loadSongs(){
-        adapters.clear();
+    private void load(){
+        fragments.clear();
         mViewPager2.setVisibility(View.GONE);
         mProgressBar.setVisibility(View.VISIBLE);
+        loadSongs();
+    }
+
+    private void loadSongs(){
         SearchFragment.getInstance().setProgress(true);
         String address="http://redrock.udday.cn:2022/search?keywords="+searchText+"&type=1";
         HttpUtil.sendOkHttpRequest(address, new Callback() {
@@ -117,15 +120,8 @@ public class SearchResultFragment extends Fragment {
                 requireActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ResultSongsListAdapter adapter;
-                        if (songsDetailBean != null&&songsDetailBean.getSongs()!=null) {
-                             adapter = new ResultSongsListAdapter(requireContext(),
-                                    R.layout.item_play_list_song, songsDetailBean.getSongs());
-                        }else{
-                            adapter = new ResultSongsListAdapter(requireContext(),
-                                    R.layout.item_play_list_song, null);
-                        }
-                        adapters.add(adapter);
+                        ResultSongsListFragment fragment=ResultSongsListFragment.newInstance(songsDetailBean);
+                        fragments.add(fragment);
                         loadLists();
                     }
                 });
@@ -163,7 +159,8 @@ public class SearchResultFragment extends Fragment {
                             adapter=new ResultPlaylistListAdapter(requireContext(),
                                     R.layout.item_list,null);
                         }
-                        adapters.add(adapter);
+                        ResultPlayListFragment fragment=ResultPlayListFragment.newInstance(adapter);
+                        fragments.add(1,fragment);
                         loadUsers();
                     }
                 });
@@ -202,19 +199,21 @@ public class SearchResultFragment extends Fragment {
                             adapter=new ResultUserListAdapter(requireContext(),
                                     R.layout.item_user_list,null);
                         }
-                        adapters.add(adapter);
+                        ResultUserListFragment fragment=ResultUserListFragment.newInstance(adapter);
+                        fragments.add(2,fragment);
                         show();
-                        SearchFragment.getInstance().setProgress(false);
-                        mProgressBar.setVisibility(View.GONE);
-                        mViewPager2.setVisibility(View.VISIBLE);
                     }
                 });
             }
         });
     }
 
+
     private void show(){
-        SearchResultPaperAdapter adapter=new SearchResultPaperAdapter(adapters);
+        SearchFragment.getInstance().setProgress(false);
+        mViewPager2.setVisibility(View.VISIBLE);
+        mProgressBar.setVisibility(View.GONE);
+        SearchResultPaperAdapter adapter=new SearchResultPaperAdapter(requireActivity(),fragments);
         mViewPager2.setAdapter(adapter);
         new TabLayoutMediator(mTabLayout, mViewPager2, new TabLayoutMediator.TabConfigurationStrategy() {
             @Override
@@ -222,6 +221,7 @@ public class SearchResultFragment extends Fragment {
                 tab.setText(tabStr[position]);
             }
         }).attach();
+
     }
 
     public void setSearchText(String searchText) {

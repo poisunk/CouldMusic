@@ -30,6 +30,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     private boolean isProgress=false;
     private Button bClose;
     private EditText etSearch;
+    private boolean isFromUser=true;
 
     public static SearchFragment newInstance(){
         return searchFragment;
@@ -97,8 +98,12 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                showSuggest(s.toString());
+                if(!isFromUser){
+                    startSearch(s.toString());
+                    isFromUser=true;
+                }else {
+                    showSuggest(s.toString());
+                }
             }
 
             @Override
@@ -117,7 +122,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     }
 
     private void showSuggest(String s){
-        if(s.equals("")){
+        if(s.equals("")&&!isProgress){
             FragmentManager manager=requireActivity().getSupportFragmentManager();
             FragmentTransaction transaction=manager.beginTransaction();
             transaction.show(SearchHotFragment.getInstance())
@@ -165,8 +170,8 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     }
 
     public void setSearchText(String s){
+        isFromUser=false;
         etSearch.setText(s);
-        startSearch(s);
     }
 
     public boolean isProgress() {

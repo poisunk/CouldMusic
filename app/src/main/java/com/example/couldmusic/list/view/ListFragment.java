@@ -275,7 +275,7 @@ public class ListFragment extends Fragment implements View.OnClickListener {
                         if(checkMusicBean.isSuccess()){
                             FragmentManager manager=requireActivity().getSupportFragmentManager();
                             FragmentTransaction transaction=manager.beginTransaction();
-                            transaction.show(MusicFragment.newInstance(songs,position));
+                            transaction.show(MusicFragment.newInstance(songs,position,ListFragment.getInstance()));
                             transaction.hide(ListFragment.getInstance());
                             transaction.commit();
                         }else {

@@ -38,6 +38,10 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        /**
+         * 主页（MainFragment）与播放音乐界面（MusicFragment）一直被加入到主活动当中
+         * 当需要时直接加载
+         */
         FragmentManager fragmentManager=getSupportFragmentManager();
         FragmentTransaction transaction= fragmentManager.beginTransaction();
         transaction.add(R.id.included_interface,MainFragment.getInstance());

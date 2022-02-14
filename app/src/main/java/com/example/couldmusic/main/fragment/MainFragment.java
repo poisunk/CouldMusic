@@ -46,12 +46,20 @@ import okhttp3.Response;
 
 public class MainFragment extends Fragment implements View.OnClickListener{
 
+
+    /**
+     * 每个Fragment都有一个static fragment
+     * 以便于Fragment间的切换
+     */
     private static MainFragment mainFragment=new MainFragment();
 
     private final String ARG_LOGIN_BEAN="loginBean";
 
     private final ArrayList<Fragment> fragments=new ArrayList<>();
 
+    /**
+     * Tab的命名
+     */
     private final String[] tabName={"发现","我的","云村"};
 
 
@@ -72,10 +80,8 @@ public class MainFragment extends Fragment implements View.OnClickListener{
     private LinearLayout llMenuBar;
 
     public static MainFragment newInstance(){
-        mainFragment=new MainFragment();
         return mainFragment;
     }
-
 
     public static MainFragment getInstance(){
         return mainFragment;
@@ -88,7 +94,9 @@ public class MainFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initBundle();
+        /**
+         * 检查缓存中有没有储存的登录数据
+         */
         if(mLoginBean==null){
             SharedPreferences preferences= PreferenceManager.getDefaultSharedPreferences(requireContext());
             String loginBean=preferences.getString(ARG_LOGIN_BEAN,null);
@@ -114,6 +122,16 @@ public class MainFragment extends Fragment implements View.OnClickListener{
         initLoginInfo();
     }
 
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        /**
+         * 当页面被展示时检查有没有传入的数据
+         */
+        if(!hidden){
+            initBundle();
+        }
+    }
 
     private void initBundle(){
         Bundle args=getArguments();
@@ -125,6 +143,7 @@ public class MainFragment extends Fragment implements View.OnClickListener{
                         getDefaultSharedPreferences(requireContext()).edit();
                 editor.putString(ARG_LOGIN_BEAN,new Gson().toJson(mLoginBean));
                 editor.apply();
+                initLoginInfo();
             }
         }
     }
@@ -148,6 +167,10 @@ public class MainFragment extends Fragment implements View.OnClickListener{
         initDrawerLayout();
     }
 
+
+    /**
+     * 初始化页面信息
+     */
     private void initPage(){
         fragments.add(DiscoverFragment.newInstance());
         fragments.add(MineFragment.newInstance(mLoginBean));
@@ -165,6 +188,9 @@ public class MainFragment extends Fragment implements View.OnClickListener{
 
     }
 
+    /**
+     * 初始化侧边栏
+     */
     private void initDrawerLayout(){
         Activity activity=requireActivity();
         //mDrawerLayout与mToolbar关联起来
@@ -174,8 +200,10 @@ public class MainFragment extends Fragment implements View.OnClickListener{
         actionBarDrawerToggle.syncState();
     }
 
+    /**
+     * 初始化登录信息
+     */
     private void initLoginInfo(){
-
         if(mLoginBean!=null){
             String pic=mLoginBean.getProfile().getAvatarUrl();
             Glide.with(requireActivity()).load(pic).into(civLoginUser);
@@ -190,6 +218,9 @@ public class MainFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onClick(View v) {
         switch (v.getId()){
+            /**
+             * 如果没有登录就转到登录界面
+             */
             case R.id.content_left_menu_bar:
                 if(mLoginBean==null){
                     FragmentManager fragmentManager= requireActivity().getSupportFragmentManager();
@@ -200,6 +231,9 @@ public class MainFragment extends Fragment implements View.OnClickListener{
                     transaction.commit();
                 }
                 break;
+            /**
+             * 取消登录按钮
+             */
             case R.id.content_left_menu_button_cancel_login:
                 if (mLoginBean!=null){
                     mLoginBean=null;
@@ -212,6 +246,9 @@ public class MainFragment extends Fragment implements View.OnClickListener{
                     initLoginInfo();
                 }
                 break;
+            /**
+             * 搜索框
+             */
             case R.id.fragment_content_main_search:
                 FragmentManager manager=requireActivity().getSupportFragmentManager();
                 FragmentTransaction transaction=manager.beginTransaction();

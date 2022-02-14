@@ -2,18 +2,21 @@ package com.example.couldmusic.util;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
 
-import com.example.couldmusic.base.App;
-
 public class BitmapUtil {
 
 
+    /**
+     * 模糊背景
+     * 直接搬运，就是感觉模糊度还是有点低，但是也不知道怎么改orz
+     * @param bitmap
+     * @param context
+     * @return
+     */
     public static Bitmap blurBitmap(Bitmap bitmap, Context context){
 
         //Let's create an empty bitmap with the same size of the bitmap we want to blur

@@ -61,6 +61,8 @@ public class MusicFragment extends Fragment implements View.OnClickListener {
     @SuppressLint("StaticFieldLeak")
     private static MusicFragment musicFragment=new MusicFragment();
 
+    private Fragment previousFragment;
+
     private SongUrlBean songUrlBean;
     private List<SongsDetailBean.Song> songs;
     private int position;
@@ -87,12 +89,13 @@ public class MusicFragment extends Fragment implements View.OnClickListener {
     private ImageButton ibPrevious;
 
 
-    public static MusicFragment newInstance(List<SongsDetailBean.Song> songs,int position) {
+    public static MusicFragment newInstance(List<SongsDetailBean.Song> songs,int position,Fragment fragment) {
         if(musicFragment.getSongs() == null || !musicFragment.getSongs().equals(songs)){
             musicFragment.setPosition(position);
             musicFragment.setSongs(songs);
             musicFragment.loadSongUrl();
         }
+        musicFragment.setPreviousFragment(fragment);
         return musicFragment;
     }
 
@@ -237,7 +240,7 @@ public class MusicFragment extends Fragment implements View.OnClickListener {
         if(!isProgress) {
             FragmentManager manager = requireActivity().getSupportFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
-            transaction.hide(this).show(ListFragment.getInstance());
+            transaction.hide(this).show(previousFragment);
             transaction.commit();
         }
     }
@@ -276,15 +279,27 @@ public class MusicFragment extends Fragment implements View.OnClickListener {
     }
 
     private void showMusicInfo(int position){
-        String musicName=songs.get(position).getName();
-        tvMusicName.setText(musicName);
-        String arName=songs.get(position).getAr().get(0).getName();
-        for(int i=1;i<songs.get(position).getAr().size();i++){
-            arName=arName+","+songs.get(position).getAr().get(i).getName();
+        tvMusicName.setText(songs.get(position).getName());
+        String alPicUrl;
+        //搜索获得的命名与歌单中获得的不一样，因此这里要分开处理
+        if(songs.get(position).getArtists()==null) {
+            String arName = songs.get(position).getAr().get(0).getName();
+            for (int i = 1; i < songs.get(position).getAr().size(); i++) {
+                arName = arName + "," + songs.get(position).getAr().get(i).getName();
+            }
+            tvArName.setText(arName);
+            alPicUrl=songs.get(position).getAl().getPicUrl();
+        }else{
+            String arName = songs.get(position).getArtists().get(0).getName();
+            for (int i = 1; i < songs.get(position).getArtists().size(); i++) {
+                arName = arName + "," + songs.get(position).getArtists().get(i).getName();
+            }
+            tvArName.setText(arName);
+
+            alPicUrl=songs.get(position).getAlbum().getArtist().getImg1v1Url();
         }
-        tvArName.setText(arName);
-        Glide.with(this).load(songs.get(position).getAl().getPicUrl()).into(civMusic);
-        HttpUtil.sendOkHttpRequest(songs.get(position).getAl().getPicUrl(), new Callback() {
+        Glide.with(this).load(alPicUrl).into(civMusic);
+        HttpUtil.sendOkHttpRequest(alPicUrl, new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 e.printStackTrace();
@@ -362,5 +377,9 @@ public class MusicFragment extends Fragment implements View.OnClickListener {
 
     public void setSongUrlBean(SongUrlBean songUrlBean) {
         this.songUrlBean = songUrlBean;
+    }
+
+    public void setPreviousFragment(Fragment previousFragment) {
+        this.previousFragment = previousFragment;
     }
 }

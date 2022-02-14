@@ -20,7 +20,6 @@ import com.example.couldmusic.R;
 import com.example.couldmusic.bean.LoginBean;
 import com.example.couldmusic.main.fragment.MainFragment;
 import com.example.couldmusic.util.HttpUtil;
-import com.example.couldmusic.util.ToastUtil;
 import com.example.couldmusic.util.Utility;
 
 import java.io.IOException;
@@ -95,7 +94,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
                     String phone=mEditPhone.getText().toString().trim();
                     loginRequest(phone,password);
                 }else{
-                    ToastUtil.show("手机号或密码不能为空!");
+                    Toast.makeText(requireContext(),"手机号或密码不能为空!",Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
@@ -125,10 +124,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
                             public void run() {
                                 if(loginBean!=null&&loginBean.getCode()==200){
                                     FragmentManager fm= requireActivity().getSupportFragmentManager();
-                                    Fragment fragment=fm.findFragmentById(R.id.fragment_content_drawer_layout);
-                                    if (fragment==null){
-                                        fragment=new MainFragment();
-                                    }
+
+                                    Fragment fragment=MainFragment.getInstance();
                                     /**
                                      将获取到的数据传回MainFragment中
                                      */
@@ -151,7 +148,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
     public void backToMain(Fragment fragment){
         FragmentManager fragmentManager=requireActivity().getSupportFragmentManager();
         FragmentTransaction transaction= fragmentManager.beginTransaction();
-        transaction.add(R.id.included_interface,fragment);
+        transaction.show(MainFragment.getInstance());
         transaction.remove(this);
         transaction.commit();
     }

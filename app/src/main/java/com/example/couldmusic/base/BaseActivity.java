@@ -20,7 +20,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
 
-
+    /**
+     * 取消状态栏
+     */
     private void cancleStatusBar(){
         Window window = getWindow();
         View decorView = window.getDecorView();

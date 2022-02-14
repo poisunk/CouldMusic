@@ -815,6 +815,16 @@ public class SongsDetailBean {
 
             private long id;
             private String name;
+            private artist artist;
+
+
+            public artist getArtist() {
+                return artist;
+            }
+
+            public void setArtist(artist artist) {
+                this.artist = artist;
+            }
 
             public long getId() {
                 return id;
@@ -831,6 +841,19 @@ public class SongsDetailBean {
             public void setName(String name) {
                 this.name = name;
             }
+
+            public static class artist{
+                private String img1v1Url;
+
+                public String getImg1v1Url() {
+                    return img1v1Url;
+                }
+
+                public void setImg1v1Url(String img1v1Url) {
+                    this.img1v1Url = img1v1Url;
+                }
+            }
+
         }
     }
 

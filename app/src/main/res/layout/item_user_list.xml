@@ -28,6 +28,7 @@
             android:textColor="@color/black"
             android:textSize="18sp"
             android:ellipsize="end"
+            android:lines="1"
             android:drawablePadding="15dp"/>
 
         <TextView
@@ -38,6 +39,7 @@
             android:textColor="@color/deep_gray"
             android:textSize="11sp"
             android:ellipsize="end"
+            android:lines="1"
             android:visibility="gone"/>
 
     </LinearLayout>
