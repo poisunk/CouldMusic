@@ -53,7 +53,7 @@ public class MyNestedScrollLayout extends NestedScrollView {
         boolean hideTop = dy > 0 && getScrollY() < topView.getMeasuredHeight();
         if (hideTop) {
             scrollBy(0, dy);
-            consumed[1] = dy; // 消费了多少，如果没有，就会重复滑动
+            consumed[1] = dy;// 消费了多少，如果没有，就会重复滑动
         }
     }
 }

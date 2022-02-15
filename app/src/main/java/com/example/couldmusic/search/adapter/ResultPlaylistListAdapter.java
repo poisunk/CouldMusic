@@ -48,11 +48,19 @@ public class ResultPlaylistListAdapter extends ArrayAdapter<PlayListDetailBean> 
         return view;
     }
 
+    /**
+     * super中判断是否为空是以getCount()==0
+     * @return
+     */
     @Override
     public boolean isEmpty() {
         return objects == null || super.isEmpty();
     }
 
+    /**
+     * super中的getCount()使用了list.size()，有时会有空指针
+     * @return
+     */
     @Override
     public int getCount() {
         if(objects==null){

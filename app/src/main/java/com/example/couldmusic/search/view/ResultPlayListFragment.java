@@ -63,6 +63,7 @@ public class ResultPlayListFragment extends Fragment {
         listView.setAdapter(adapter);
         listView.setEmptyView(emptyText);
 
+        //设置list中item的点击事件
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

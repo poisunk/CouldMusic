@@ -49,7 +49,9 @@ public class HotListRecyclerAdapter extends RecyclerView.Adapter<HotListRecycler
 
     public static class InnerHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
+        //序号
         private TextView tvNum;
+        //信息
         private TextView tvName;
         private OnItemClickListener mClickListener;
 

@@ -54,8 +54,11 @@ public class ListSongsAdapter extends RecyclerView.Adapter<ListSongsAdapter.Inne
     public static class InnerHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         LinearLayout linearLayout;
+        //序号
         TextView tvNum;
+        //名字
         TextView tvName;
+        //歌曲详情
         TextView tvAr;
 
         private OnItemClickListener mClickListener;

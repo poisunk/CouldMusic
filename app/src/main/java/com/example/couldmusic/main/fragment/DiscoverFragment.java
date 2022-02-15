@@ -44,18 +44,19 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener{
 
     private static DiscoverFragment discoverFragment=new DiscoverFragment();
 
+    //用于Banner的图片显示
     private final GlideImageLoader glideImageLoader=new GlideImageLoader();
     private final List<String> bannerImagePath=new ArrayList<>();
 
+    //主页推荐歌单的Recycler 一般推荐有六个歌单
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout mSwipeRefresh;
 
+    //主页的图片轮播
     private Banner mBanner;
 
-
-
+    //不需要新数据
     public static DiscoverFragment newInstance() {
-        discoverFragment=new DiscoverFragment();
         return discoverFragment;
     }
 
@@ -112,6 +113,9 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener{
     }
 
 
+    /**
+     * 网络请求主页信息
+     */
     private void load(){
         String address="http://redrock.udday.cn:2022/homepage/block/page";
         HttpUtil.sendOkHttpRequest(address, new Callback() {
@@ -145,6 +149,11 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener{
 
     }
 
+
+    /**
+     * 加载主页Banner信息
+     * @param bannerBean
+     */
     private void loadBanner(BannerBean bannerBean){
         bannerImagePath.clear();
         for(BannerBean.BannersBean bean : bannerBean.getBanners()){
@@ -159,6 +168,11 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener{
         mBanner.start();
     }
 
+
+    /**
+     * 加载主页推荐歌单信息
+     * @param recommendListBean
+     */
     private void loadRecommendList(RecommendListBean recommendListBean){
         RecommendListRecyclerAdapter adapter=new RecommendListRecyclerAdapter(recommendListBean,this);
         adapter.setOnItemClickListener(new OnItemClickListener() {
@@ -186,6 +200,7 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener{
     }
 
 
+    //Banner中需要一个图片加载的类
     private static class GlideImageLoader extends ImageLoader{
 
         @Override

@@ -61,11 +61,13 @@ public class MusicFragment extends Fragment implements View.OnClickListener {
     @SuppressLint("StaticFieldLeak")
     private static MusicFragment musicFragment=new MusicFragment();
 
+    //前一个fragment 这样在歌单打开就返回歌单在搜索界面打开就返回搜索界面
     private Fragment previousFragment;
 
     private SongUrlBean songUrlBean;
     private List<SongsDetailBean.Song> songs;
     private int position;
+    //是否正在播放
     private boolean isPlaying=false;
     private boolean isProgress=false;
 
@@ -75,21 +77,38 @@ public class MusicFragment extends Fragment implements View.OnClickListener {
     private SimpleDateFormat time = new SimpleDateFormat("m:ss");
     private Handler mHandler = new Handler();
 
+    //退出按钮
     private Button bBack;
     private LinearLayout llBackground;
+    //当前播放音乐的名字
     private TextView tvMusicName;
+    //当前播放音乐作者的名字
     private TextView tvArName;
+    //音乐播放的Cd背景
     private CircleImageView civCD;
     private CircleImageView civMusic;
+    //当前播放的时间
     private TextView tvSeekTime;
+    //音乐时长
     private TextView tvEndTime;
+    //拖动进度条
     private SeekBar sbProgress;
+    //下一首
     private ImageButton ibNext;
+    //播放、暂停
     private ImageButton ibPlay;
+    //上一首
     private ImageButton ibPrevious;
 
-
+    /**
+     * songs当前歌单的所有歌曲信息，position当前播放的位置，fragment打开的位置
+     * @param songs
+     * @param position
+     * @param fragment
+     * @return
+     */
     public static MusicFragment newInstance(List<SongsDetailBean.Song> songs,int position,Fragment fragment) {
+        //如果点击同一个歌单就没必要在加载
         if(musicFragment.getSongs() == null || !musicFragment.getSongs().equals(songs)){
             musicFragment.setPosition(position);
             musicFragment.setSongs(songs);
@@ -153,8 +172,8 @@ public class MusicFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
+        //当从隐藏中展现时在加载
         if(!hidden) {
-
             show();
         }
     }
@@ -183,9 +202,11 @@ public class MusicFragment extends Fragment implements View.OnClickListener {
         sbProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                //如果改变来自用户则改变播放进度
                 if(fromUser){
                     mBinder.seekToPosition(seekBar.getProgress());
                 }
+                //如果进度完成则播放下一首
                 if(progress==seekBar.getMax()){
                     startMusic(position = (position + 1) % songs.size());
                 }
@@ -193,13 +214,12 @@ public class MusicFragment extends Fragment implements View.OnClickListener {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
             }
-
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
 
             }
+
         });
     }
 
@@ -236,6 +256,7 @@ public class MusicFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    //返回到previousFragment
     private void back(){
         if(!isProgress) {
             FragmentManager manager = requireActivity().getSupportFragmentManager();
@@ -245,10 +266,10 @@ public class MusicFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    private void loadMusicInfo(){
-
-    }
-
+    /**
+     * 开始播放position的音乐
+     * @param position
+     */
     private void startMusic(int position){
         if(!isProgress) {
             Toast.makeText(requireContext(), "开始播放", Toast.LENGTH_SHORT).show();
@@ -256,6 +277,7 @@ public class MusicFragment extends Fragment implements View.OnClickListener {
             mBinder.startMusic(songUrlBean.getData().get(position).getUrl());
             sbProgress.setMax(mBinder.getProgress());
             tvEndTime.setText(time.format(mBinder.getProgress()));
+            //开启一个新线程去改变进度条
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -268,16 +290,19 @@ public class MusicFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    //播放音乐
     private void play(){
         mBinder.playMusic();
         isPlaying=true;
     }
 
+    //暂停音乐
     private void pause(){
         mBinder.pauseMusic();
         isPlaying=false;
     }
 
+    //加载歌曲信息
     private void showMusicInfo(int position){
         tvMusicName.setText(songs.get(position).getName());
         String alPicUrl;
@@ -299,6 +324,7 @@ public class MusicFragment extends Fragment implements View.OnClickListener {
             alPicUrl=songs.get(position).getAlbum().getArtist().getImg1v1Url();
         }
         Glide.with(this).load(alPicUrl).into(civMusic);
+        //获取图片的byte信息以获取一个Bitmap
         HttpUtil.sendOkHttpRequest(alPicUrl, new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
@@ -320,12 +346,14 @@ public class MusicFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void run() {
                         llBackground.setBackground(new BitmapDrawable(BitmapUtil.blurBitmap(bitmap,requireContext())));
+                        isProgress=false;
                     }
                 });
             }
         });
     }
 
+    //获取音乐的url
     private void loadSongUrl(){
         isProgress=true;
         String address="http://redrock.udday.cn:2022/song/url?id=";

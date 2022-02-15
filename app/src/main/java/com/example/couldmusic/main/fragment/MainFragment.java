@@ -260,6 +260,10 @@ public class MainFragment extends Fragment implements View.OnClickListener{
         }
     }
 
+
+    /**
+     * 取消登录的网络请求
+     */
     private void cancelLogin(){
         String address="http://redrock.udday.cn:2022/logout";
         HttpUtil.sendOkHttpRequest(address, new Callback() {

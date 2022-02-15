@@ -30,6 +30,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     private boolean isProgress=false;
     private Button bClose;
     private EditText etSearch;
+    //判断搜索框的更改是否来自用户
     private boolean isFromUser=true;
 
     public static SearchFragment newInstance(){
@@ -89,6 +90,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     }
 
     private  void initEvent(){
+        //设置搜索框的更改监听
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -98,6 +100,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                //如果不是来自用户则直接开始搜索，如果是则展示提示
                 if(!isFromUser){
                     startSearch(s.toString());
                     isFromUser=true;
@@ -111,6 +114,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
             }
         });
+        //用户键盘确定的监听
         etSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -121,6 +125,10 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         bClose.setOnClickListener(this);
     }
 
+    /**
+     * 如果搜索框有字符就提示，如果没有字符有展示热点搜索词
+     * @param s
+     */
     private void showSuggest(String s){
         if(s.equals("")&&!isProgress){
             FragmentManager manager=requireActivity().getSupportFragmentManager();
@@ -158,6 +166,10 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    /**
+     * 开始搜索
+     * @param s
+     */
     private void startSearch(String s){
         if(!isProgress&& !s.equals("")){
             FragmentManager manager=requireActivity().getSupportFragmentManager();
@@ -169,6 +181,10 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    /**
+     * 设置搜索框中的信息，并直接开始搜索
+     * @param s
+     */
     public void setSearchText(String s){
         isFromUser=false;
         etSearch.setText(s);

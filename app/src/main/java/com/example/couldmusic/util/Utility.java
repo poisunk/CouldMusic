@@ -25,6 +25,11 @@ import org.json.JSONObject;
 
 public class Utility {
 
+    /**
+     * 获取登录信息
+     * @param response
+     * @return
+     */
     public static LoginBean handleLoginByPhone(String response){
         try {
             JSONObject jsonObject=new JSONObject(response);
@@ -36,6 +41,11 @@ public class Utility {
         return null;
     }
 
+    /**
+     * 获取主页信息
+     * @param response
+     * @return
+     */
     public static HomePageBean handleHomePageInfo(String response){
         try {
             JSONObject jsonObject=new JSONObject(response);
@@ -62,6 +72,12 @@ public class Utility {
         return null;
     }
 
+    /**
+     * 获取歌单详情
+     * 包括歌单中所有歌曲的id
+     * @param response
+     * @return
+     */
     public static PlayListDetailBean handlePlayListDetailInfo(String response){
         try {
             JSONObject jsonObject=new JSONObject(response);
@@ -74,6 +90,11 @@ public class Utility {
         return null;
     }
 
+    /**
+     * 获取音乐详情
+     * @param response
+     * @return
+     */
     public static SongsDetailBean handleSongsDetailInfo(String response){
         try {
             JSONObject jsonObject=new JSONObject(response);
@@ -85,6 +106,11 @@ public class Utility {
         return null;
     }
 
+    /**
+     * 查看音乐是否可用
+     * @param response
+     * @return
+     */
     public static CheckMusicBean handleCheckMusicInfo(String response){
         try {
             JSONObject jsonObject=new JSONObject(response);
@@ -97,6 +123,11 @@ public class Utility {
 
     }
 
+    /**
+     * 获取歌曲url
+     * @param response
+     * @return
+     */
     public static SongUrlBean handleSongUrlInfo(String response){
         try {
             JSONObject jsonObject=new JSONObject(response);
@@ -108,6 +139,11 @@ public class Utility {
         return null;
     }
 
+    /**
+     * 获取热点搜索词
+     * @param response
+     * @return
+     */
     public static SearchHotBean handleSearchHotInfo(String response){
         try {
             JSONObject jsonObject=new JSONObject(response);
@@ -121,6 +157,11 @@ public class Utility {
 
     }
 
+    /**
+     * 获取搜索提示
+     * @param response
+     * @return
+     */
     public static SearchSuggestBean handleSearchSuggestInfo(String response){
         try {
             JSONObject jsonObject=new JSONObject(response);
@@ -132,7 +173,11 @@ public class Utility {
         return null;
     }
 
-
+    /**
+     * 获取用户详情
+     * @param response
+     * @return
+     */
     public static UserDetailBean handleUserDetailInfo(String response){
         try {
             JSONObject jsonObject=new JSONObject(response);
@@ -145,6 +190,11 @@ public class Utility {
         return null;
     }
 
+    /**
+     * 获取用户歌单详情
+     * @param response
+     * @return
+     */
     public static UserPlayListBean handleUserPlayListInfo(String response){
         try {
             JSONObject jsonObject=new JSONObject(response);
@@ -157,6 +207,11 @@ public class Utility {
         return null;
     }
 
+    /**
+     * 获取搜索到的歌曲
+     * @param response
+     * @return
+     */
     public static SongsDetailBean handleSearchSongsDetailInfo(String response){
         try {
             JSONObject jsonObject=new JSONObject(response);
@@ -169,6 +224,11 @@ public class Utility {
         return null;
     }
 
+    /**
+     * 获取搜索到的歌单
+     * @param response
+     * @return
+     */
     public static SearchPlaylistBean handleSearchPlayListInfo(String response){
         try {
             JSONObject jsonObject=new JSONObject(response);
@@ -181,6 +241,11 @@ public class Utility {
 
     }
 
+    /**
+     * 获取搜索到的用户
+     * @param response
+     * @return
+     */
     public static SearchUsersBean handleSearchUsersBean(String response){
         try {
             JSONObject jsonObject=new JSONObject(response);

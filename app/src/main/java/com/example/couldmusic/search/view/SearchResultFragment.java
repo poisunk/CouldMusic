@@ -97,6 +97,10 @@ public class SearchResultFragment extends Fragment {
         loadSongs();
     }
 
+    /**
+     * 因为种种原因，按顺序请求才是最好的方法
+     * 加载歌曲
+     */
     private void loadSongs(){
         SearchFragment.getInstance().setProgress(true);
         String address="http://redrock.udday.cn:2022/search?keywords="+searchText+"&type=1";
@@ -129,6 +133,9 @@ public class SearchResultFragment extends Fragment {
         });
     }
 
+    /**
+     * 加载歌单
+     */
     private void loadLists(){
         String address="http://redrock.udday.cn:2022/search?keywords="+searchText+"&type=1000";
         HttpUtil.sendOkHttpRequest(address, new Callback() {
@@ -169,6 +176,9 @@ public class SearchResultFragment extends Fragment {
 
     }
 
+    /**
+     * 加载用户
+     */
     private void loadUsers(){
         String address="http://redrock.udday.cn:2022/search?keywords="+searchText+"&type=1002";
         HttpUtil.sendOkHttpRequest(address, new Callback() {
@@ -208,7 +218,9 @@ public class SearchResultFragment extends Fragment {
         });
     }
 
-
+    /**
+     * 展示信息
+     */
     private void show(){
         SearchFragment.getInstance().setProgress(false);
         mViewPager2.setVisibility(View.VISIBLE);

@@ -49,14 +49,19 @@ public class MineFragment extends Fragment implements View.OnClickListener{
     @SuppressLint("StaticFieldLeak")
     private static MineFragment mineFragment=new MineFragment();
 
+    //查看缓存中是否有登录信息
     private LoginBean loginBean=null;
     private long userId;
+    //喜欢歌单的id
     private long loveListId;
     private boolean isLogin=false;
+    //是否在加载中 如果是则禁用跳转Fragment的代码
     private boolean isProgress=false;
 
+    //用户歌单（除了喜欢歌单）
     private RecyclerView recyclerView;
 
+    //喜欢歌单信息
     private ImageView ivLoveList;
     private TextView tvLoveListName;
     private TextView tvLoveListInfo;
@@ -64,6 +69,7 @@ public class MineFragment extends Fragment implements View.OnClickListener{
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private UserInfo mUserInfo;
 
+    //需要登录信息
     public static MineFragment newInstance(LoginBean loginBean){
         mineFragment.setLoginBean(loginBean);
         return mineFragment;
@@ -126,6 +132,10 @@ public class MineFragment extends Fragment implements View.OnClickListener{
         }
     }
 
+    /**
+     * 检查登录信息
+     * ps:本来是想用网络请求确认是否登录，结果那个借口反应太慢了！！！
+     */
     private void checkLoginStatus(){
         if(loginBean==null){
             Toast.makeText(requireContext(),"123",Toast.LENGTH_SHORT).show();
@@ -136,6 +146,11 @@ public class MineFragment extends Fragment implements View.OnClickListener{
         }
     }
 
+
+    /**
+     * 加载用户信息
+     * 头像，姓名，关注数，粉丝数，等级
+     */
     private void showUserInfo(){
         isProgress=true;
         String address="http://redrock.udday.cn:2022/user/detail?uid="+userId;
@@ -168,6 +183,9 @@ public class MineFragment extends Fragment implements View.OnClickListener{
         });
     }
 
+    /**
+     * 加载用户歌单
+     */
     private void showUserList(){
         String address="http://redrock.udday.cn:2022/user/playlist?uid="+userId;
         HttpUtil.sendOkHttpRequest(address, new Callback() {
@@ -220,6 +238,7 @@ public class MineFragment extends Fragment implements View.OnClickListener{
     @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(View v) {
+
         if(!isProgress){
             switch (v.getId()){
                 case R.id.fragment_mine_love_list_name:
@@ -233,6 +252,7 @@ public class MineFragment extends Fragment implements View.OnClickListener{
         }
     }
 
+    //打开歌单
     private void openList(String id){
         FragmentManager manager=requireActivity().getSupportFragmentManager();
         FragmentTransaction transaction=manager.beginTransaction();

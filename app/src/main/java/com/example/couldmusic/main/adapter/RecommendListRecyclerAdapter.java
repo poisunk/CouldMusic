@@ -52,7 +52,9 @@ public class RecommendListRecyclerAdapter extends RecyclerView.Adapter<Recommend
 
         FrameLayout mFrameLayout;
         ImageView mImageView;
+        //播放量
         TextView mCount;
+        //名字
         TextView mTitle;
         private OnItemClickListener listener;
 
@@ -78,7 +80,12 @@ public class RecommendListRecyclerAdapter extends RecyclerView.Adapter<Recommend
     }
 
 
-
+    /**
+     * 将count从数字转化到字符串
+     * 如：2.5万，450.1万
+     * @param count
+     * @return
+     */
     private String countString(long count){
         if(count==0L){
             return "";

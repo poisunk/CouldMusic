@@ -32,7 +32,7 @@ public class MusicServices extends Service {
 
     public class MusicBinder extends Binder{
 
-
+        //开始播放一个新的音乐
         public void startMusic(String url) {
             if (mMediaPlayer != null) {
                 try {
@@ -46,19 +46,21 @@ public class MusicServices extends Service {
             }
         }
 
+        //开始播放
         public void playMusic() {
             if (!mMediaPlayer.isPlaying()) {
                 mMediaPlayer.start();
             }
         }
 
+        //暂停
         public void pauseMusic() {
             if (mMediaPlayer.isPlaying()) {
                 mMediaPlayer.pause();
             }
         }
 
-
+        //关闭
         public void closeMedia() {
             if (mMediaPlayer != null) {
                 mMediaPlayer.stop();
@@ -66,14 +68,17 @@ public class MusicServices extends Service {
             }
         }
 
+        //得到全部进度
         public int getProgress() {
             return mMediaPlayer.getDuration();
         }
 
+        //得到当前进度
         public int getPlayPosition() {
             return mMediaPlayer.getCurrentPosition();
         }
 
+        //跳转到指定进度
         public void seekToPosition(int msec) {
             mMediaPlayer.seekTo(msec);
         }

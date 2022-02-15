@@ -55,7 +55,9 @@ public class UserListRecyclerAdapter extends RecyclerView.Adapter<UserListRecycl
         private LinearLayout linearLayout;
 
         private ImageView imageView;
+        //名字
         private TextView tvListName;
+        //歌单信息
         private TextView tvListInfo;
 
         private OnItemClickListener listener;

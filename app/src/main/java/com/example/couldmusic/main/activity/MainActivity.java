@@ -50,6 +50,13 @@ public class MainActivity extends BaseActivity {
         transaction.commit();
     }
 
+
+    /**
+     * 获取权限
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
     @SuppressLint("MissingSuperCall")
     public void onRequestPermissionsResult(int requestCode, @NonNull  String[]permissions, @NonNull int[] grantResults) {
         switch (requestCode) {

@@ -75,6 +75,9 @@ public class SearchHotFragment extends Fragment implements View.OnClickListener 
         loadHotInfo();
     }
 
+    /**
+     * 加载热点信息
+     */
     private void loadHotInfo(){
         isProgress=true;
         String address="http://redrock.udday.cn:2022/search/hot";

@@ -71,6 +71,12 @@ public class ListFragment extends Fragment implements View.OnClickListener {
     private ListCover mListCover;
     private RecyclerView mRecyclerView;
 
+    /**
+     * 歌单id，打开的fragment
+     * @param id
+     * @param fragment
+     * @return
+     */
     public static ListFragment newInstance(String id,Fragment fragment){
         listFragment.setPreviousFragment(fragment);
         listFragment.setListId(id);
@@ -132,6 +138,9 @@ public class ListFragment extends Fragment implements View.OnClickListener {
     }
 
 
+    /**
+     * 加载歌单详细信息
+     */
     private void load(){
         isProgress=true;
         String address="http://redrock.udday.cn:2022/playlist/detail?id="+listId+"&s=0";
@@ -169,6 +178,10 @@ public class ListFragment extends Fragment implements View.OnClickListener {
         });
     }
 
+    /**
+     * 展示歌单信息
+     * @param playListDetailBean
+     */
     private void showListInfo(PlayListDetailBean playListDetailBean){
         mListCover.setImage(playListDetailBean.getCoverImgUrl());
         mListCover.setPlayCount(playListDetailBean.getPlayCount());
@@ -203,7 +216,10 @@ public class ListFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-
+    /**
+     * 加载歌单中所有的歌曲信息
+     * @param playListDetailBean
+     */
     private void loadListDetail(PlayListDetailBean playListDetailBean){
         List<PlayListDetailBean.TrackIds> list=playListDetailBean.getTrackIds();
         int num=list.size()-1;
@@ -251,6 +267,11 @@ public class ListFragment extends Fragment implements View.OnClickListener {
         });
     }
 
+    /**
+     * 加载点击歌曲的url信息
+     * @param position
+     * @param songs
+     */
     private void playMusic(int position, List<SongsDetailBean.Song> songs){
         String address="http://redrock.udday.cn:2022/check/music?id="+songs.get(position).getId();
         HttpUtil.sendOkHttpRequest(address, new Callback() {
@@ -295,6 +316,8 @@ public class ListFragment extends Fragment implements View.OnClickListener {
             }
         });
     }
+
+
     @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(View v) {

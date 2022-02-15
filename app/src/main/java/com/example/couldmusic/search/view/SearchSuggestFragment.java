@@ -72,6 +72,10 @@ public class SearchSuggestFragment extends Fragment{
     private void initEvent(){
     }
 
+    /**
+     * 加载提示信息
+     * @param keyWord
+     */
     public void loadSuggest(String keyWord) {
         if (!isProgress) {
             isProgress = true;
