@@ -24,10 +24,10 @@
             tools:ignore="ExportedService" />
 
         <activity
-            android:name=".main.activity.MainActivity"
+            android:name=".page.main.activity.MainActivity"
             android:exported="true" />
         <activity
-            android:name=".main.activity.StartActivity"
+            android:name=".page.main.activity.StartActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
