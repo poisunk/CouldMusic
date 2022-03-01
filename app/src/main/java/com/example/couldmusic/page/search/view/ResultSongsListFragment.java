@@ -16,7 +16,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.couldmusic.R;
 import com.example.couldmusic.bean.SongsDetailBean;
-import com.example.couldmusic.page.music.MusicFragment;
+import com.example.couldmusic.page.music.view.MusicFragment;
 import com.example.couldmusic.page.search.adapter.ResultSongsListAdapter;
 
 import java.util.List;

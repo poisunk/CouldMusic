@@ -33,7 +33,7 @@ import com.example.couldmusic.page.list.contract.ListContract;
 import com.example.couldmusic.page.list.model.ListModel;
 import com.example.couldmusic.page.list.presenter.ListPresenter;
 import com.example.couldmusic.page.main.model.OnItemClickListener;
-import com.example.couldmusic.page.music.MusicFragment;
+import com.example.couldmusic.page.music.view.MusicFragment;
 import com.example.couldmusic.util.BitmapUtil;
 import com.example.couldmusic.widget.ListCover;
 

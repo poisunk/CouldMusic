@@ -1,4 +1,4 @@
-package com.example.couldmusic.page.music;
+package com.example.couldmusic.page.music.view;
 
 import static android.content.Context.BIND_AUTO_CREATE;
 
@@ -38,6 +38,9 @@ import com.bumptech.glide.Glide;
 import com.example.couldmusic.R;
 import com.example.couldmusic.bean.SongUrlBean;
 import com.example.couldmusic.bean.SongsDetailBean;
+import com.example.couldmusic.page.music.contract.MusicContract;
+import com.example.couldmusic.page.music.model.MusicModel;
+import com.example.couldmusic.page.music.presenter.MusicPresenter;
 import com.example.couldmusic.services.MusicServices;
 import com.example.couldmusic.util.BitmapUtil;
 import com.example.couldmusic.util.HttpUtil;
@@ -53,7 +56,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class MusicFragment extends Fragment implements View.OnClickListener {
+public class MusicFragment extends Fragment implements View.OnClickListener, MusicContract.MusicView {
 
     @SuppressLint("StaticFieldLeak")
     private static MusicFragment musicFragment=new MusicFragment();
@@ -97,6 +100,8 @@ public class MusicFragment extends Fragment implements View.OnClickListener {
     //上一首
     private ImageButton ibPrevious;
 
+    private MusicPresenter presenter;
+
     /**
      * songs当前歌单的所有歌曲信息，position当前播放的位置，fragment打开的位置
      * @param songs
@@ -107,10 +112,10 @@ public class MusicFragment extends Fragment implements View.OnClickListener {
     public static MusicFragment newInstance(List<SongsDetailBean.Song> songs,int position,Fragment fragment) {
         //如果点击同一个歌单就没必要在加载
         if(musicFragment.getSongs() == null || !musicFragment.getSongs().equals(songs)){
-            musicFragment.setPosition(position);
             musicFragment.setSongs(songs);
-            musicFragment.loadSongUrl();
+            musicFragment.presenter.loadSongsUrl(songs);
         }
+        musicFragment.setPosition(position);
         musicFragment.setPreviousFragment(fragment);
         return musicFragment;
     }
@@ -150,6 +155,8 @@ public class MusicFragment extends Fragment implements View.OnClickListener {
             //有就绑定播放音乐的服务
             requireActivity().bindService(MusicServiceIntent, serviceConnection, BIND_AUTO_CREATE);
         }
+
+        presenter=new MusicPresenter(this,new MusicModel());
     }
 
     @Nullable
@@ -164,6 +171,7 @@ public class MusicFragment extends Fragment implements View.OnClickListener {
         super.onViewCreated(view, savedInstanceState);
         initView(view);
         initEvent();
+
     }
 
     @Override
@@ -171,7 +179,8 @@ public class MusicFragment extends Fragment implements View.OnClickListener {
         super.onHiddenChanged(hidden);
         //当从隐藏中展现时在加载
         if(!hidden) {
-            show();
+            presenter.showMusicInfo(position);
+            presenter.startMusic(position);
         }
     }
 
@@ -205,7 +214,7 @@ public class MusicFragment extends Fragment implements View.OnClickListener {
                 }
                 //如果进度完成则播放下一首
                 if(progress==seekBar.getMax()){
-                    startMusic(position = (position + 1) % songs.size());
+                    presenter.startMusic(position);
                 }
             }
 
@@ -220,11 +229,7 @@ public class MusicFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    private void show(){
-        if(songs!=null) {
-            showMusicInfo(position);
-        }
-    }
+
 
     @SuppressLint({"NonConstantResourceId", "UseCompatLoadingForDrawables"})
     @Override
@@ -235,7 +240,7 @@ public class MusicFragment extends Fragment implements View.OnClickListener {
                     back();
                     break;
                 case R.id.fragment_play_music_next:
-                    startMusic(position = (position + 1) % songs.size());
+                    presenter.startMusic(position = (position + 1) % songs.size());
                     break;
                 case R.id.fragment_play_music_play:
                     if(isPlaying) {
@@ -247,7 +252,7 @@ public class MusicFragment extends Fragment implements View.OnClickListener {
                     }
                     break;
                 case R.id.fragment_play_music_previous:
-                    startMusic(position = (position == 0 ? (songs.size() - 1) : (position - 1)));
+                    presenter.startMusic(position = (position == 0 ? (songs.size() - 1) : (position - 1)));
                     break;
             }
         }
@@ -267,7 +272,7 @@ public class MusicFragment extends Fragment implements View.OnClickListener {
      * 开始播放position的音乐
      * @param position
      */
-    private void startMusic(int position){
+    public void startMusic(int position){
         if(!isProgress) {
             Toast.makeText(requireContext(), "开始播放", Toast.LENGTH_SHORT).show();
             showMusicInfo(position);
@@ -300,7 +305,7 @@ public class MusicFragment extends Fragment implements View.OnClickListener {
     }
 
     //加载歌曲信息
-    private void showMusicInfo(int position){
+    public void showMusicInfo(int position){
         tvMusicName.setText(songs.get(position).getName());
         String alPicUrl;
         //搜索获得的命名与歌单中获得的不一样，因此这里要分开处理
@@ -311,6 +316,8 @@ public class MusicFragment extends Fragment implements View.OnClickListener {
             }
             tvArName.setText(arName);
             alPicUrl=songs.get(position).getAl().getPicUrl();
+
+
         }else{
             String arName = songs.get(position).getArtists().get(0).getName();
             for (int i = 1; i < songs.get(position).getArtists().size(); i++) {
@@ -322,71 +329,10 @@ public class MusicFragment extends Fragment implements View.OnClickListener {
         }
         Glide.with(this).load(alPicUrl).into(civMusic);
         //获取图片的byte信息以获取一个Bitmap
-        HttpUtil.sendOkHttpRequest(alPicUrl, new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                e.printStackTrace();
-                requireActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(requireContext(),"网络请求失败",Toast.LENGTH_SHORT).show();
-                        isProgress=false;
-                    }
-                });
-            }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                final byte[] responseBytes= Objects.requireNonNull(response.body()).bytes();
-                final Bitmap bitmap= BitmapFactory.decodeByteArray(responseBytes,0,responseBytes.length);
-                requireActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        llBackground.setBackground(new BitmapDrawable(BitmapUtil.blurBitmap(bitmap,requireContext())));
-                        isProgress=false;
-                    }
-                });
-            }
-        });
+        presenter.loadBackgroundPic(alPicUrl);
     }
 
-    //获取音乐的url
-    private void loadSongUrl(){
-        isProgress=true;
-        String address="http://redrock.udday.cn:2022/song/url?id=";
-        address+=songs.get(0).getId();
-        for(int i=1;i<songs.size();i++){
-            address = address + "," +songs.get(i).getId();
-        }
-        HttpUtil.sendOkHttpRequest(address, new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                e.printStackTrace();
-                requireActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(requireContext(),"网络请求失败",Toast.LENGTH_SHORT).show();
-                        isProgress=false;
-                    }
-                });
-            }
 
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                final String responseText= Objects.requireNonNull(response.body()).string();
-                final SongUrlBean songUrlBean= Utility.handleSongUrlInfo(responseText);
-                requireActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        isProgress=false;
-                        MusicFragment.getInstance().setSongUrlBean(songUrlBean);
-                        MusicFragment.getInstance().startMusic(position);
-                    }
-                });
-            }
-        });
-
-    }
 
     public void setSongs(List<SongsDetailBean.Song> songs) {
         this.songs = songs;
@@ -406,5 +352,32 @@ public class MusicFragment extends Fragment implements View.OnClickListener {
 
     public void setPreviousFragment(Fragment previousFragment) {
         this.previousFragment = previousFragment;
+    }
+
+    @Override
+    public void loadSongsUrl(SongUrlBean songUrlBean) {
+        requireActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                MusicFragment.getInstance().setSongUrlBean(songUrlBean);
+                presenter.startMusic(position);
+            }
+        });
+
+    }
+
+    @Override
+    public void loadBackgroundPic(Bitmap bitmap) {
+        requireActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                llBackground.setBackground(new BitmapDrawable(BitmapUtil.blurBitmap(bitmap,requireContext())));
+            }
+        });
+    }
+
+    @Override
+    public void onRequestFailed() {
+        Toast.makeText(requireContext(),"网络请求失败",Toast.LENGTH_SHORT).show();
     }
 }

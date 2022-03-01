@@ -14,7 +14,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.couldmusic.R;
 import com.example.couldmusic.base.BaseActivity;
 import com.example.couldmusic.page.main.fragment.MainFragment;
-import com.example.couldmusic.page.music.MusicFragment;
+import com.example.couldmusic.page.music.view.MusicFragment;
 
 public class MainActivity extends BaseActivity {
 
