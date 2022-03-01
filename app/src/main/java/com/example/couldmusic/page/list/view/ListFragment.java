@@ -3,7 +3,6 @@ package com.example.couldmusic.page.list.view;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -29,23 +28,16 @@ import com.example.couldmusic.R;
 import com.example.couldmusic.bean.CheckMusicBean;
 import com.example.couldmusic.bean.PlayListDetailBean;
 import com.example.couldmusic.bean.SongsDetailBean;
-import com.example.couldmusic.page.main.model.OnItemClickListener;
 import com.example.couldmusic.page.list.adapter.ListSongsAdapter;
+import com.example.couldmusic.page.list.contract.ListContract;
+import com.example.couldmusic.page.list.model.ListModel;
+import com.example.couldmusic.page.list.presenter.ListPresenter;
+import com.example.couldmusic.page.main.model.OnItemClickListener;
 import com.example.couldmusic.page.music.MusicFragment;
 import com.example.couldmusic.util.BitmapUtil;
-import com.example.couldmusic.util.HttpUtil;
-import com.example.couldmusic.util.Utility;
 import com.example.couldmusic.widget.ListCover;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
-
-public class ListFragment extends Fragment implements View.OnClickListener {
+public class ListFragment extends Fragment implements View.OnClickListener, ListContract.ListView {
 
     @SuppressLint("StaticFieldLeak")
     private static ListFragment listFragment=new ListFragment();
@@ -64,6 +56,8 @@ public class ListFragment extends Fragment implements View.OnClickListener {
     private Button btBack;
     private ListCover mListCover;
     private RecyclerView mRecyclerView;
+
+    private ListPresenter presenter;
 
     /**
      * 歌单id，打开的fragment
@@ -89,7 +83,7 @@ public class ListFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        presenter=new ListPresenter(this,new ListModel());
     }
 
     @Nullable
@@ -103,17 +97,9 @@ public class ListFragment extends Fragment implements View.OnClickListener {
         super.onViewCreated(view, savedInstanceState);
         initView(view);
         initEvent();
-        load();
+        presenter.loadPlayListDetail(listId);
     }
 
-
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if(!hidden) {
-            load();
-        }
-    }
 
     private void initView(View v){
         mBackground=v.findViewById(R.id.fragment_play_list);
@@ -129,186 +115,6 @@ public class ListFragment extends Fragment implements View.OnClickListener {
 
     private void initEvent(){
         btBack.setOnClickListener(this);
-    }
-
-
-    /**
-     * 加载歌单详细信息
-     */
-    private void load(){
-        isProgress=true;
-        String address="http://redrock.udday.cn:2022/playlist/detail?id="+listId+"&s=0";
-        HttpUtil.sendOkHttpRequest(address, new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                e.printStackTrace();
-                requireActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(requireContext(),"网络请求失败",Toast.LENGTH_SHORT).show();
-                        isProgress=false;
-                    }
-                });
-            }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                final String responseText= Objects.requireNonNull(response.body()).string();
-                final PlayListDetailBean playListDetailBean= Utility.handlePlayListDetailInfo(responseText);
-                requireActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (playListDetailBean!=null) {
-                            showListInfo(playListDetailBean);
-
-                            loadListDetail(playListDetailBean);
-                        }else {
-                            Toast.makeText(requireContext(),"网络请求失败",Toast.LENGTH_SHORT).show();
-                        }
-                        isProgress=false;
-                    }
-                });
-            }
-        });
-    }
-
-    /**
-     * 展示歌单信息
-     * @param playListDetailBean
-     */
-    private void showListInfo(PlayListDetailBean playListDetailBean){
-        mListCover.setImage(playListDetailBean.getCoverImgUrl());
-        mListCover.setPlayCount(playListDetailBean.getPlayCount());
-        tvListName.setText(playListDetailBean.getName());
-        tvCreatorName.setText(playListDetailBean.getCreator().getNickname());
-        Glide.with(requireContext()).load(playListDetailBean.getCreator().getAvatarUrl())
-                .into(ivCreatorImage);
-        HttpUtil.sendOkHttpRequest(playListDetailBean.getCoverImgUrl(), new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                e.printStackTrace();
-                requireActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(requireContext(),"网络请求失败",Toast.LENGTH_SHORT).show();
-                        isProgress=false;
-                    }
-                });
-            }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                final byte[] responseBytes= Objects.requireNonNull(response.body()).bytes();
-                final Bitmap bitmap= BitmapFactory.decodeByteArray(responseBytes,0,responseBytes.length);
-                requireActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mBackground.setBackground(new BitmapDrawable(BitmapUtil.blurBitmap(bitmap,requireContext())));
-                    }
-                });
-            }
-        });
-    }
-
-    /**
-     * 加载歌单中所有的歌曲信息
-     * @param playListDetailBean
-     */
-    private void loadListDetail(PlayListDetailBean playListDetailBean){
-        List<PlayListDetailBean.TrackIds> list=playListDetailBean.getTrackIds();
-        int num=list.size()-1;
-        String address="http://redrock.udday.cn:2022/song/detail?ids=";
-        for(int i=0;i<num;i++){
-            address=address+list.get(i).getId()+",";
-        }
-        address=address+list.get(num).getId();
-        HttpUtil.sendOkHttpRequest(address, new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                e.printStackTrace();
-                requireActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(requireContext(),"网络请求失败",Toast.LENGTH_SHORT).show();
-                        isProgress=false;
-                    }
-                });
-            }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                final String responseText= Objects.requireNonNull(response.body()).string();
-                final SongsDetailBean songsDetailBean=Utility.handleSongsDetailInfo(responseText);
-                requireActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        isProgress=false;
-                        if(songsDetailBean!=null) {
-                            ListSongsAdapter adapter = new ListSongsAdapter(songsDetailBean.getSongs());
-                            adapter.setOnItemClickListener(new OnItemClickListener() {
-                                @Override
-                                public void onItemClick(View view, int position) {
-                                    playMusic(position, songsDetailBean.getSongs());
-                                }
-                            });
-                            mRecyclerView.setAdapter(adapter);
-                            LinearLayoutManager manager = new LinearLayoutManager(requireContext());
-                            mRecyclerView.setLayoutManager(manager);
-                        }
-                    }
-                });
-            }
-        });
-    }
-
-    /**
-     * 加载点击歌曲的url信息
-     * @param position
-     * @param songs
-     */
-    private void playMusic(int position, List<SongsDetailBean.Song> songs){
-        String address="http://redrock.udday.cn:2022/check/music?id="+songs.get(position).getId();
-        HttpUtil.sendOkHttpRequest(address, new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                e.printStackTrace();
-                requireActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(requireContext(),"网络请求失败",Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                final String responseText= Objects.requireNonNull(response.body()).string();
-                final CheckMusicBean checkMusicBean=Utility.handleCheckMusicInfo(responseText);
-                requireActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(checkMusicBean.isSuccess()){
-                            FragmentManager manager=requireActivity().getSupportFragmentManager();
-                            FragmentTransaction transaction=manager.beginTransaction();
-                            transaction.show(MusicFragment.newInstance(songs,position,ListFragment.getInstance()));
-                            transaction.hide(ListFragment.getInstance());
-                            transaction.commit();
-                        }else {
-                            AlertDialog.Builder builder=new AlertDialog.Builder(requireContext());
-                            builder.setTitle("提示");
-                            builder.setMessage(checkMusicBean.getMessage());
-                            builder.setNegativeButton("确定", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.cancel();
-                                }
-                            });
-                            builder.show();
-                        }
-                    }
-                });
-            }
-        });
     }
 
 
@@ -332,5 +138,79 @@ public class ListFragment extends Fragment implements View.OnClickListener {
 
     public void setPreviousFragment(Fragment previousFragment) {
         this.previousFragment = previousFragment;
+    }
+
+    @Override
+    public void loadListInfo(PlayListDetailBean playListDetailBean) {
+        requireActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mListCover.setImage(playListDetailBean.getCoverImgUrl());
+                mListCover.setPlayCount(playListDetailBean.getPlayCount());
+                tvListName.setText(playListDetailBean.getName());
+                tvCreatorName.setText(playListDetailBean.getCreator().getNickname());
+                Glide.with(requireContext()).load(playListDetailBean.getCreator().getAvatarUrl())
+                        .into(ivCreatorImage);
+            }
+        });
+        presenter.loadBackgroundPic(playListDetailBean.getCoverImgUrl());
+    }
+
+    @Override
+    public void loadSongsInfo(SongsDetailBean songsDetailBean) {
+        requireActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ListSongsAdapter adapter = new ListSongsAdapter(songsDetailBean.getSongs());
+                adapter.setOnItemClickListener(new OnItemClickListener() {
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        MusicFragment.newInstance(songsDetailBean.getSongs(),position,ListFragment.getInstance());
+                        presenter.loadMusic(position,songsDetailBean.getSongs());
+                    }
+                });
+                mRecyclerView.setAdapter(adapter);
+                LinearLayoutManager manager = new LinearLayoutManager(requireContext());
+                mRecyclerView.setLayoutManager(manager);
+            }
+        });
+    }
+
+    @Override
+    public void playMusic(CheckMusicBean checkMusicBean) {
+        if(checkMusicBean.isSuccess()){
+            FragmentManager manager=requireActivity().getSupportFragmentManager();
+            FragmentTransaction transaction=manager.beginTransaction();
+            transaction.show(MusicFragment.getInstance());
+            transaction.hide(ListFragment.getInstance());
+            transaction.commit();
+        }else {
+            AlertDialog.Builder builder=new AlertDialog.Builder(requireContext());
+            builder.setTitle("提示");
+            builder.setMessage(checkMusicBean.getMessage());
+            builder.setNegativeButton("确定", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+            builder.show();
+
+        }
+    }
+
+    @Override
+    public void loadBackgroundPic(Bitmap bitmap) {
+        requireActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mBackground.setBackground(new BitmapDrawable(BitmapUtil.blurBitmap(bitmap,requireContext())));
+            }
+        });
+    }
+
+    @Override
+    public void onRequestFailed() {
+        Toast.makeText(requireContext(),"网络请求失败!",Toast.LENGTH_SHORT).show();
     }
 }
