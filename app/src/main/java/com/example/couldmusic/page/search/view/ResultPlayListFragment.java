@@ -68,10 +68,9 @@ public class ResultPlayListFragment extends Fragment {
                 long ID = adapter.getItem(position).getId();
                 FragmentManager manager=requireActivity().getSupportFragmentManager();
                 FragmentTransaction transaction=manager.beginTransaction();
-                ListFragment fragment=ListFragment.newInstance(String.valueOf(ID),SearchFragment.getInstance());
-                transaction.add(R.id.included_interface,fragment);
-                transaction.hide(SearchFragment.getInstance())
-                        .show(fragment)
+                ListFragment fragment=ListFragment.newInstance(String.valueOf(ID));
+                transaction.add(R.id.included_interface,fragment,"ListFragment")
+                        .addToBackStack("ListFragment")
                         .commit();
             }
         });

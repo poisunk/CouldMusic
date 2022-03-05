@@ -42,8 +42,6 @@ public class ListFragment extends Fragment implements View.OnClickListener, List
     @SuppressLint("StaticFieldLeak")
     private static ListFragment listFragment=new ListFragment();
 
-    private Fragment previousFragment;
-
     private String listId;
 
     private boolean isProgress=false;
@@ -62,11 +60,9 @@ public class ListFragment extends Fragment implements View.OnClickListener, List
     /**
      * 歌单id，打开的fragment
      * @param id
-     * @param fragment
      * @return
      */
-    public static ListFragment newInstance(String id,Fragment fragment){
-        listFragment.setPreviousFragment(fragment);
+    public static ListFragment newInstance(String id){
         listFragment.setListId(id);
         return listFragment;
     }
@@ -125,8 +121,7 @@ public class ListFragment extends Fragment implements View.OnClickListener, List
             switch (v.getId()) {
                 case R.id.fragment_play_list_back_button:
                     FragmentManager manager = requireActivity().getSupportFragmentManager();
-                    FragmentTransaction transaction = manager.beginTransaction();
-                    transaction.remove(this).show(previousFragment).commit();
+                    manager.popBackStackImmediate();
                     break;
             }
         }
@@ -134,10 +129,6 @@ public class ListFragment extends Fragment implements View.OnClickListener, List
 
     public void setListId(String listId) {
         this.listId = listId;
-    }
-
-    public void setPreviousFragment(Fragment previousFragment) {
-        this.previousFragment = previousFragment;
     }
 
     @Override
@@ -165,7 +156,7 @@ public class ListFragment extends Fragment implements View.OnClickListener, List
                 adapter.setOnItemClickListener(new OnItemClickListener() {
                     @Override
                     public void onItemClick(View view, int position) {
-                        MusicFragment.newInstance(songsDetailBean.getSongs(),position,ListFragment.getInstance());
+                        MusicFragment.newInstance(songsDetailBean.getSongs(),position);
                         presenter.loadMusic(position,songsDetailBean.getSongs());
                     }
                 });
@@ -181,8 +172,8 @@ public class ListFragment extends Fragment implements View.OnClickListener, List
         if(checkMusicBean.isSuccess()){
             FragmentManager manager=requireActivity().getSupportFragmentManager();
             FragmentTransaction transaction=manager.beginTransaction();
-            transaction.show(MusicFragment.getInstance());
-            transaction.hide(ListFragment.getInstance());
+            transaction.add(R.id.included_interface,MusicFragment.getInstance(),"MusicFragment");
+            transaction.addToBackStack("MusicFragment");
             transaction.commit();
         }else {
             AlertDialog.Builder builder=new AlertDialog.Builder(requireContext());

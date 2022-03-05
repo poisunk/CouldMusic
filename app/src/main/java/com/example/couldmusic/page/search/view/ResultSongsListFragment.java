@@ -80,10 +80,9 @@ public class ResultSongsListFragment extends Fragment {
                 List<SongsDetailBean.Song> songs=songsDetailBean.getSongs();
                 FragmentManager manager=requireActivity().getSupportFragmentManager();
                 FragmentTransaction transaction=manager.beginTransaction();
-                MusicFragment fragment= MusicFragment.newInstance(songs
-                        ,position,SearchFragment.getInstance());
-                transaction.hide(SearchFragment.getInstance())
-                        .show(fragment)
+                MusicFragment fragment= MusicFragment.newInstance(songs,position);
+                transaction.add(R.id.included_interface,fragment,"MusicFragment")
+                        .addToBackStack("MusicFragment")
                         .commit();
             }
         });

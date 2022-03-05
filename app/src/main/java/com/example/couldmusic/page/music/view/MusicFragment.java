@@ -61,9 +61,6 @@ public class MusicFragment extends Fragment implements View.OnClickListener, Mus
     @SuppressLint("StaticFieldLeak")
     private static MusicFragment musicFragment=new MusicFragment();
 
-    //前一个fragment 这样在歌单打开就返回歌单在搜索界面打开就返回搜索界面
-    private Fragment previousFragment;
-
     private SongUrlBean songUrlBean;
     private List<SongsDetailBean.Song> songs;
     private int position;
@@ -106,17 +103,14 @@ public class MusicFragment extends Fragment implements View.OnClickListener, Mus
      * songs当前歌单的所有歌曲信息，position当前播放的位置，fragment打开的位置
      * @param songs
      * @param position
-     * @param fragment
      * @return
      */
-    public static MusicFragment newInstance(List<SongsDetailBean.Song> songs,int position,Fragment fragment) {
+    public static MusicFragment newInstance(List<SongsDetailBean.Song> songs,int position) {
         //如果点击同一个歌单就没必要在加载
         if(musicFragment.getSongs() == null || !musicFragment.getSongs().equals(songs)){
             musicFragment.setSongs(songs);
-            musicFragment.presenter.loadSongsUrl(songs);
         }
         musicFragment.setPosition(position);
-        musicFragment.setPreviousFragment(fragment);
         return musicFragment;
     }
 
@@ -171,7 +165,7 @@ public class MusicFragment extends Fragment implements View.OnClickListener, Mus
         super.onViewCreated(view, savedInstanceState);
         initView(view);
         initEvent();
-
+        presenter.loadSongsUrl(songs);
     }
 
     @Override
@@ -262,9 +256,7 @@ public class MusicFragment extends Fragment implements View.OnClickListener, Mus
     private void back(){
         if(!isProgress) {
             FragmentManager manager = requireActivity().getSupportFragmentManager();
-            FragmentTransaction transaction = manager.beginTransaction();
-            transaction.hide(this).show(previousFragment);
-            transaction.commit();
+            manager.popBackStackImmediate();
         }
     }
 
@@ -348,10 +340,6 @@ public class MusicFragment extends Fragment implements View.OnClickListener, Mus
 
     public void setSongUrlBean(SongUrlBean songUrlBean) {
         this.songUrlBean = songUrlBean;
-    }
-
-    public void setPreviousFragment(Fragment previousFragment) {
-        this.previousFragment = previousFragment;
     }
 
     @Override

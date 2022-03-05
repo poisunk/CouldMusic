@@ -152,9 +152,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
             switch (v.getId()){
                 case R.id.fragment_search_close:
                     FragmentManager manager=requireActivity().getSupportFragmentManager();
-                    FragmentTransaction transaction=manager.beginTransaction();
-                    transaction.remove(this).show(MainFragment.getInstance());
-                    transaction.commit();
+                    manager.popBackStackImmediate();
                     break;
                 default:
                     break;

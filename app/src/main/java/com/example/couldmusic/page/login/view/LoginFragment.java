@@ -1,7 +1,9 @@
 package com.example.couldmusic.page.login.view;
 
 import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +26,7 @@ import com.example.couldmusic.page.login.presenter.LoginPresenter;
 import com.example.couldmusic.page.main.fragment.MainFragment;
 import com.example.couldmusic.util.HttpUtil;
 import com.example.couldmusic.util.Utility;
+import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -41,6 +44,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Log
     @SuppressLint("StaticFieldLeak")
     private static LoginFragment loginFragment=new LoginFragment();
 
+    private final String ARG_LOGIN_BEAN="loginBean";
 
     private Button mButtonBack;
     private Button mButtonLogin;
@@ -100,7 +104,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Log
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.fragment_login_back_button:
-                backToMain(MainFragment.getInstance());
+                back();
                 break;
             case R.id.fragment_login_login_button:
                 //手机号与密码不能为空
@@ -119,25 +123,19 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Log
     /**
      * 转换页面到主界面
      */
-    public void backToMain(Fragment fragment){
+    public void back(){
         FragmentManager fragmentManager=requireActivity().getSupportFragmentManager();
-        FragmentTransaction transaction= fragmentManager.beginTransaction();
-        transaction.show(MainFragment.getInstance());
-        transaction.remove(this);
-        transaction.commit();
+        fragmentManager.popBackStackImmediate();
     }
 
     @Override
     public void onLoginSucceed(LoginBean loginBean) {
         FragmentManager fm= requireActivity().getSupportFragmentManager();
-        Fragment fragment=MainFragment.getInstance();
-        /**
-         *将获取到的数据
-         */
-        Bundle args=new Bundle();
-        args.putSerializable("loginBean",loginBean);
-        fragment.setArguments(args);
-        backToMain(fragment);
+        SharedPreferences.Editor editor= PreferenceManager.
+                getDefaultSharedPreferences(requireContext()).edit();
+        editor.putString(ARG_LOGIN_BEAN,new Gson().toJson(loginBean));
+        editor.apply();
+        back();
     }
 
     @Override

@@ -51,7 +51,8 @@ public class MainFragment extends Fragment implements View.OnClickListener{
      * 每个Fragment都有一个static fragment
      * 以便于Fragment间的切换
      */
-    private static MainFragment mainFragment=new MainFragment();
+    @SuppressLint("StaticFieldLeak")
+    private final static MainFragment mainFragment=new MainFragment();
 
     private final String ARG_LOGIN_BEAN="loginBean";
 
@@ -112,6 +113,7 @@ public class MainFragment extends Fragment implements View.OnClickListener{
         View v=inflater.inflate(R.layout.fragment_content,container,false);
         initView(v);
         initEvent();
+        fragments.clear();
         initPage();
         return v;
     }
@@ -122,31 +124,6 @@ public class MainFragment extends Fragment implements View.OnClickListener{
         initLoginInfo();
     }
 
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        /**
-         * 当页面被展示时检查有没有传入的数据
-         */
-        if(!hidden){
-            initBundle();
-        }
-    }
-
-    private void initBundle(){
-        Bundle args=getArguments();
-        if(args!=null){
-            Serializable obj = args.getSerializable("loginBean");
-            if (obj instanceof LoginBean) {
-                mLoginBean = (LoginBean) obj;
-                SharedPreferences.Editor editor= PreferenceManager.
-                        getDefaultSharedPreferences(requireContext()).edit();
-                editor.putString(ARG_LOGIN_BEAN,new Gson().toJson(mLoginBean));
-                editor.apply();
-                initLoginInfo();
-            }
-        }
-    }
 
     private void initView(View v){
         tvLoginUser= v.findViewById(R.id.content_left_menu_bar_name);
@@ -224,10 +201,9 @@ public class MainFragment extends Fragment implements View.OnClickListener{
             case R.id.content_left_menu_bar:
                 if(mLoginBean==null){
                     FragmentManager fragmentManager= requireActivity().getSupportFragmentManager();
-                    Fragment fragment=LoginFragment.newInstance();
                     FragmentTransaction transaction= fragmentManager.beginTransaction();
-                    transaction.add(R.id.included_interface,fragment);
-                    transaction.hide(this);
+                    transaction.add(R.id.included_interface,LoginFragment.newInstance(),"LoginFragment");
+                    transaction.addToBackStack("LoginFragment");
                     transaction.commit();
                 }
                 break;
@@ -252,8 +228,8 @@ public class MainFragment extends Fragment implements View.OnClickListener{
             case R.id.fragment_content_main_search:
                 FragmentManager manager=requireActivity().getSupportFragmentManager();
                 FragmentTransaction transaction=manager.beginTransaction();
-                transaction.add(R.id.included_interface, SearchFragment.getInstance());
-                transaction.hide(this);
+                transaction.add(R.id.included_interface, SearchFragment.getInstance(),"SearchFragment");
+                transaction.addToBackStack("SearchFragment");
                 transaction.commit();
                 break;
 

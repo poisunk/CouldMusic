@@ -22,19 +22,11 @@ import com.example.couldmusic.page.search.adapter.SearchResultPaperAdapter;
 import com.example.couldmusic.page.search.contract.SearchContract;
 import com.example.couldmusic.page.search.model.SearchModel;
 import com.example.couldmusic.page.search.presenter.SearchPresenter;
-import com.example.couldmusic.util.HttpUtil;
-import com.example.couldmusic.util.Utility;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
 
 public class SearchResultFragment extends Fragment implements SearchContract.SearchResultView {
 

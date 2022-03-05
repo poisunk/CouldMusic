@@ -18,12 +18,13 @@ public class StartActivity extends BaseActivity {
             public void run() {
                 try {
                     Thread.sleep(500L);
-                    MainActivity.startMainActivity(StartActivity.this);
-                    finish();
+
                 }catch (InterruptedException e){
                     e.printStackTrace();
 
                 }
+                MainActivity.startMainActivity(StartActivity.this);
+                finish();
             }
         }).start();
     }

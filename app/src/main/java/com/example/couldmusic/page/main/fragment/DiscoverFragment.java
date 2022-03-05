@@ -180,11 +180,9 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener{
             public void onItemClick(View view, int position) {
                 FragmentManager manager= requireActivity().getSupportFragmentManager();
                 FragmentTransaction transaction=manager.beginTransaction();
-                ListFragment fragment=ListFragment.newInstance(recommendListBean.getCreatives().get(position).getCreativeId(),
-                        MainFragment.getInstance());
-                transaction.add(R.id.included_interface,fragment);
-                transaction.hide(MainFragment.getInstance())
-                        .show(fragment)
+                ListFragment fragment=ListFragment.newInstance(recommendListBean.getCreatives().get(position).getCreativeId());
+                transaction.add(R.id.included_interface,fragment,"ListFragment")
+                        .addToBackStack("ListFragment")
                         .commit();
             }
         });

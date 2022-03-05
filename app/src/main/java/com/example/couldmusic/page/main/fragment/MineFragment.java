@@ -249,11 +249,10 @@ public class MineFragment extends Fragment implements View.OnClickListener{
     private void openList(String id){
         FragmentManager manager=requireActivity().getSupportFragmentManager();
         FragmentTransaction transaction=manager.beginTransaction();
-        transaction.add(R.id.included_interface,
-                ListFragment.newInstance(id,MainFragment.getInstance()));
-        transaction.show(ListFragment.getInstance())
-                .hide(MainFragment.getInstance())
+        transaction.add(R.id.included_interface, ListFragment.newInstance(id),"ListFragment")
+                .addToBackStack("ListFragment")
                 .commit();
+
     }
 
 

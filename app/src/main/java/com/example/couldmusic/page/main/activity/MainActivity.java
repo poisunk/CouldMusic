@@ -5,9 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -17,6 +20,8 @@ import com.example.couldmusic.page.main.fragment.MainFragment;
 import com.example.couldmusic.page.music.view.MusicFragment;
 
 public class MainActivity extends BaseActivity {
+
+    private final FragmentManager fragmentManager=getSupportFragmentManager();
 
 
     public static void startMainActivity(Context context){
@@ -28,17 +33,7 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        /**
-         * 主页（MainFragment）与播放音乐界面（MusicFragment）一直被加入到主活动当中
-         * 当需要时直接加载
-         */
-        FragmentManager fragmentManager=getSupportFragmentManager();
-        FragmentTransaction transaction= fragmentManager.beginTransaction();
-        transaction.add(R.id.included_interface,MainFragment.getInstance());
-        transaction.add(R.id.included_interface,MusicFragment.getInstance());
-        transaction.show(MainFragment.getInstance()).hide(MusicFragment.getInstance());
-        transaction.commit();
+        addFragment(new MainFragment(),"MainFragment");
     }
 
 
@@ -62,4 +57,29 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            // 获取当前回退栈中的Fragment个数
+            int backStackEntryCount = fragmentManager.getBackStackEntryCount();
+            // 回退栈中至少有多个fragment,栈底部是首页
+            if (backStackEntryCount > 1) {
+                // 立即回退一步
+                fragmentManager.popBackStackImmediate();
+            } else {
+                //回退栈中只剩一个时,退出应用
+                finish();
+            }
+        }
+        return true;
+    }
+
+    private void addFragment(Fragment fragment,String tag){
+        FragmentTransaction transaction=fragmentManager.beginTransaction();
+        transaction.add(R.id.included_interface,fragment,tag);
+        transaction.addToBackStack(tag);
+        transaction.commit();
+    }
 }
