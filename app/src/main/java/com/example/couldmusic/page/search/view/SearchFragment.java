@@ -128,18 +128,16 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
      * @param s
      */
     private void showSuggest(String s){
+        FragmentManager manager=requireActivity().getSupportFragmentManager();
+        FragmentTransaction transaction=manager.beginTransaction();
         if(s.equals("")&&!isProgress){
-            FragmentManager manager=requireActivity().getSupportFragmentManager();
-            FragmentTransaction transaction=manager.beginTransaction();
             transaction.show(SearchHotFragment.getInstance())
                     .hide(SearchSuggestFragment.getInstance())
                     .hide(SearchResultFragment.getInstance())
                     .commit();
 
         }else{
-            FragmentManager manager=requireActivity().getSupportFragmentManager();
-            FragmentTransaction transaction=manager.beginTransaction();
-            SearchSuggestFragment.getInstance().loadSuggest(s);
+            SearchSuggestFragment.getInstance().loadSuggests(s);
             transaction.show(SearchSuggestFragment.getInstance())
                     .hide(SearchHotFragment.getInstance())
                     .hide(SearchResultFragment.getInstance())

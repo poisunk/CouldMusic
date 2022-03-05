@@ -19,6 +19,9 @@ import com.example.couldmusic.bean.SongsDetailBean;
 import com.example.couldmusic.page.search.adapter.ResultPlaylistListAdapter;
 import com.example.couldmusic.page.search.adapter.ResultUserListAdapter;
 import com.example.couldmusic.page.search.adapter.SearchResultPaperAdapter;
+import com.example.couldmusic.page.search.contract.SearchContract;
+import com.example.couldmusic.page.search.model.SearchModel;
+import com.example.couldmusic.page.search.presenter.SearchPresenter;
 import com.example.couldmusic.util.HttpUtil;
 import com.example.couldmusic.util.Utility;
 import com.google.android.material.tabs.TabLayout;
@@ -33,7 +36,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class SearchResultFragment extends Fragment {
+public class SearchResultFragment extends Fragment implements SearchContract.SearchResultView {
 
     private static SearchResultFragment searchResultFragment=new SearchResultFragment();
 
@@ -49,6 +52,8 @@ public class SearchResultFragment extends Fragment {
     private ViewPager2 mViewPager2;
     private ProgressBar mProgressBar;
 
+    private SearchPresenter presenter;
+
 
     public static SearchResultFragment newInstance(String s){
         searchResultFragment.setSearchText(s);
@@ -57,6 +62,12 @@ public class SearchResultFragment extends Fragment {
 
     public static SearchResultFragment getInstance(){
         return searchResultFragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        presenter=new SearchPresenter(this,new SearchModel());
     }
 
     @Nullable
@@ -78,7 +89,14 @@ public class SearchResultFragment extends Fragment {
         super.onHiddenChanged(hidden);
         if(!hidden){
             if(searchText!=null) {
-                load();
+                fragments.clear();
+                fragments.add(new Fragment());
+                fragments.add(new Fragment());
+                fragments.add(new Fragment());
+                mViewPager2.setVisibility(View.GONE);
+                mProgressBar.setVisibility(View.VISIBLE);
+                SearchFragment.getInstance().setProgress(true);
+                presenter.loadResult(searchText);
             }
         }
     }
@@ -89,132 +107,46 @@ public class SearchResultFragment extends Fragment {
         mProgressBar=v.findViewById(R.id.fragment_search_result_progress_bar);
     }
 
-    private void load(){
-        fragments.clear();
-        mViewPager2.setVisibility(View.GONE);
-        mProgressBar.setVisibility(View.VISIBLE);
-        loadSongs();
-    }
-
     /**
-     * 因为种种原因，按顺序请求才是最好的方法
      * 加载歌曲
      */
-    private void loadSongs(){
-        SearchFragment.getInstance().setProgress(true);
-        String address="http://redrock.udday.cn:2022/search?keywords="+searchText+"&type=1";
-        HttpUtil.sendOkHttpRequest(address, new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                e.printStackTrace();
-                requireActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(requireContext(),"网络请求失败",Toast.LENGTH_SHORT).show();
-                        SearchFragment.getInstance().setProgress(false);
-                    }
-                });
-            }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                final String responseText= Objects.requireNonNull(response.body()).string();
-                final SongsDetailBean songsDetailBean= Utility.handleSearchSongsDetailInfo(responseText);
-                requireActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        ResultSongsListFragment fragment=ResultSongsListFragment.newInstance(songsDetailBean);
-                        fragments.add(fragment);
-                        loadLists();
-                    }
-                });
-            }
-        });
+    private void loadSongs(SongsDetailBean songsDetailBean){
+        ResultSongsListFragment fragment=ResultSongsListFragment.newInstance(songsDetailBean);
+        fragments.set(0,fragment);
     }
 
     /**
      * 加载歌单
      */
-    private void loadLists(){
-        String address="http://redrock.udday.cn:2022/search?keywords="+searchText+"&type=1000";
-        HttpUtil.sendOkHttpRequest(address, new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                e.printStackTrace();
-                requireActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(requireContext(),"网络请求失败",Toast.LENGTH_SHORT).show();
-                        SearchFragment.getInstance().setProgress(false);
-                    }
-                });
-            }
+    private void loadLists(SearchPlaylistBean searchPlaylistBean){
 
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                final String responseText= Objects.requireNonNull(response.body()).string();
-                final SearchPlaylistBean searchPlaylistBean=Utility.handleSearchPlayListInfo(responseText);
-                requireActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        ResultPlaylistListAdapter adapter;
-                        if(searchPlaylistBean!=null&&searchPlaylistBean.getResult()!=null){
-                            adapter=new ResultPlaylistListAdapter(requireContext(),
-                                    R.layout.item_list,searchPlaylistBean.getResult().getPlaylists());
-                        }else{
-                            adapter=new ResultPlaylistListAdapter(requireContext(),
-                                    R.layout.item_list,null);
-                        }
-                        ResultPlayListFragment fragment=ResultPlayListFragment.newInstance(adapter);
-                        fragments.add(1,fragment);
-                        loadUsers();
-                    }
-                });
-            }
-        });
-
+        ResultPlaylistListAdapter adapter;
+        if(searchPlaylistBean!=null&&searchPlaylistBean.getResult()!=null){
+            adapter=new ResultPlaylistListAdapter(requireContext(),
+                    R.layout.item_list,searchPlaylistBean.getResult().getPlaylists());
+        }else{
+            adapter=new ResultPlaylistListAdapter(requireContext(),
+                    R.layout.item_list,null);
+        }
+        ResultPlayListFragment fragment=ResultPlayListFragment.newInstance(adapter);
+        fragments.set(1,fragment);
     }
 
     /**
      * 加载用户
      */
-    private void loadUsers(){
-        String address="http://redrock.udday.cn:2022/search?keywords="+searchText+"&type=1002";
-        HttpUtil.sendOkHttpRequest(address, new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                e.printStackTrace();
-                requireActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(requireContext(),"网络请求失败",Toast.LENGTH_SHORT).show();
-                        SearchFragment.getInstance().setProgress(false);
-                    }
-                });
-            }
+    private void loadUsers(SearchUsersBean searchUsersBean){
 
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                final String responseText= Objects.requireNonNull(response.body()).string();
-                final SearchUsersBean searchUsersBean=Utility.handleSearchUsersBean(responseText);
-                requireActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        ResultUserListAdapter adapter;
-                        if(searchUsersBean!=null&&searchUsersBean.getResult().getUserprofiles()!=null){
-                            adapter=new ResultUserListAdapter(requireContext(),
-                                    R.layout.item_user_list,searchUsersBean.getResult().getUserprofiles());
-                        }else{
-                            adapter=new ResultUserListAdapter(requireContext(),
-                                    R.layout.item_user_list,null);
-                        }
-                        ResultUserListFragment fragment=ResultUserListFragment.newInstance(adapter);
-                        fragments.add(2,fragment);
-                        show();
-                    }
-                });
-            }
-        });
+        ResultUserListAdapter adapter;
+        if(searchUsersBean!=null&&searchUsersBean.getResult().getUserprofiles()!=null){
+            adapter=new ResultUserListAdapter(requireContext(),
+                    R.layout.item_user_list,searchUsersBean.getResult().getUserprofiles());
+        }else{
+            adapter=new ResultUserListAdapter(requireContext(),
+                    R.layout.item_user_list,null);
+        }
+        ResultUserListFragment fragment=ResultUserListFragment.newInstance(adapter);
+        fragments.set(2,fragment);
     }
 
     /**
@@ -237,5 +169,37 @@ public class SearchResultFragment extends Fragment {
 
     public void setSearchText(String searchText) {
         this.searchText = searchText;
+    }
+
+    @Override
+    public void onRequestFailed() {
+        Toast.makeText(requireContext(),"网络请求失败!",Toast.LENGTH_SHORT).show();
+    }
+
+    private int completeCount=0;
+    private final int SEARCH_COMPLETE_NUMBER=3;
+
+    @Override
+    public void loadResult(Object object) {
+        requireActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(object instanceof SongsDetailBean){
+                    loadSongs((SongsDetailBean) object);
+                    completeCount++;
+                }else if(object instanceof SearchPlaylistBean){
+                    loadLists((SearchPlaylistBean) object);
+                    completeCount++;
+                }else if(object instanceof  SearchUsersBean){
+                    loadUsers((SearchUsersBean) object);
+                    completeCount++;
+                }
+
+                if(completeCount==SEARCH_COMPLETE_NUMBER){
+                    completeCount=0;
+                    show();
+                }
+            }
+        });
     }
 }

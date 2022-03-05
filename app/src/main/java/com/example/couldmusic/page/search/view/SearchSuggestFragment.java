@@ -15,6 +15,9 @@ import androidx.fragment.app.Fragment;
 
 import com.example.couldmusic.R;
 import com.example.couldmusic.bean.SearchSuggestBean;
+import com.example.couldmusic.page.search.contract.SearchContract;
+import com.example.couldmusic.page.search.model.SearchModel;
+import com.example.couldmusic.page.search.presenter.SearchPresenter;
 import com.example.couldmusic.util.HttpUtil;
 import com.example.couldmusic.util.Utility;
 
@@ -29,7 +32,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class SearchSuggestFragment extends Fragment{
+public class SearchSuggestFragment extends Fragment implements SearchContract.SearchSuggestView {
 
 
     private static SearchSuggestFragment searchSuggestFragment=new SearchSuggestFragment();
@@ -38,6 +41,8 @@ public class SearchSuggestFragment extends Fragment{
     private String keyWord;
 
     private ListView mListView;
+
+    private SearchPresenter presenter;
 
     public static SearchSuggestFragment newInstance(String keyWord){
         searchSuggestFragment.setKeyWord(keyWord);
@@ -50,6 +55,12 @@ public class SearchSuggestFragment extends Fragment{
 
     public SearchSuggestFragment(){
 
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        presenter=new SearchPresenter(this,new SearchModel());
     }
 
     @Nullable
@@ -76,61 +87,50 @@ public class SearchSuggestFragment extends Fragment{
      * 加载提示信息
      * @param keyWord
      */
-    public void loadSuggest(String keyWord) {
-        if (!isProgress) {
-            isProgress = true;
-            SearchFragment.getInstance().setProgress(true);
-            String address = "http://redrock.udday.cn:2022/search/suggest?keywords=" + keyWord + "&type=mobile";
-            HttpUtil.sendOkHttpRequest(address, new Callback() {
-                @Override
-                public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                    e.printStackTrace();
-                    requireActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(requireContext(), "网络请求失败", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-
-                @Override
-                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                    final String responseText = Objects.requireNonNull(response.body()).string();
-                    final SearchSuggestBean searchSuggestBean = Utility.handleSearchSuggestInfo(responseText);
-                    requireActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if(searchSuggestBean!=null&&searchSuggestBean.getResult().getAllMatch()!=null) {
-                                List<Map<String, String>> mListItems = new ArrayList<>();
-                                for (SearchSuggestBean.Result.AllMatch allMatch : searchSuggestBean.getResult().getAllMatch()) {
-                                    Map<String, String> map = new HashMap<>();
-                                    map.put("suggest", allMatch.getKeyword());
-                                    mListItems.add(map);
-                                }
-                                SimpleAdapter adapter = new SimpleAdapter(requireContext(), mListItems, R.layout.item_search_suggest
-                                        , new String[]{"suggest"}, new int[]{R.id.item_search_suggest_text});
-                                mListView.setAdapter(adapter);
-                            }else{
-                                mListView.setAdapter(null);
-                            }
-                            isProgress=false;
-                            mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                @Override
-                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                    SearchFragment.getInstance().setSearchText(searchSuggestBean.getResult()
-                                            .getAllMatch().get(position).getKeyword());
-                                }
-                            });
-                            SearchFragment.getInstance().setProgress(false);
-                        }
-                    });
-                }
-            });
-        }
+    public void loadSuggests(String keyWord) {
+        presenter.loadSuggests(keyWord);
     }
 
 
     public void setKeyWord (String keyWord){
             this.keyWord = keyWord;
+    }
+
+    @Override
+    public void onRequestFailed() {
+        Toast.makeText(requireContext(),"网络请求失败",Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void loadSuggests(SearchSuggestBean searchSuggestBean) {
+        requireActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(searchSuggestBean.getResult()!=null
+                        &&searchSuggestBean.getResult().getAllMatch()!=null) {
+                    List<Map<String, String>> mListItems = new ArrayList<>();
+                    for (SearchSuggestBean.Result.AllMatch allMatch : searchSuggestBean.getResult().getAllMatch()) {
+                        Map<String, String> map = new HashMap<>();
+                        map.put("suggest", allMatch.getKeyword());
+                        mListItems.add(map);
+                    }
+                    SimpleAdapter adapter = new SimpleAdapter(requireContext(), mListItems, R.layout.item_search_suggest
+                            , new String[]{"suggest"}, new int[]{R.id.item_search_suggest_text});
+                    mListView.setAdapter(adapter);
+                    mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            SearchFragment.getInstance().setSearchText(searchSuggestBean.getResult()
+                                    .getAllMatch().get(position).getKeyword());
+                        }
+                    });
+                }else{
+                    mListView.setAdapter(null);
+                }
+                isProgress=false;
+
+            }
+        });
+
     }
 }

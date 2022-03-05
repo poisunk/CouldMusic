@@ -16,6 +16,9 @@ import com.example.couldmusic.R;
 import com.example.couldmusic.bean.SearchHotBean;
 import com.example.couldmusic.page.main.model.OnItemClickListener;
 import com.example.couldmusic.page.search.adapter.HotListRecyclerAdapter;
+import com.example.couldmusic.page.search.contract.SearchContract;
+import com.example.couldmusic.page.search.model.SearchModel;
+import com.example.couldmusic.page.search.presenter.SearchPresenter;
 import com.example.couldmusic.util.HttpUtil;
 import com.example.couldmusic.util.Utility;
 
@@ -26,7 +29,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class SearchHotFragment extends Fragment implements View.OnClickListener {
+public class SearchHotFragment extends Fragment implements View.OnClickListener, SearchContract.SearchHotView {
 
     private static SearchHotFragment searchHotFragment=new SearchHotFragment();
 
@@ -35,6 +38,8 @@ public class SearchHotFragment extends Fragment implements View.OnClickListener 
 
 
     private RecyclerView mRecycler;
+
+    private SearchPresenter presenter;
 
     public static SearchHotFragment newInstance(){
         return searchHotFragment;
@@ -48,6 +53,12 @@ public class SearchHotFragment extends Fragment implements View.OnClickListener 
 
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        presenter=new SearchPresenter(this,new SearchModel());
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -59,7 +70,7 @@ public class SearchHotFragment extends Fragment implements View.OnClickListener 
         super.onViewCreated(view, savedInstanceState);
         initView(view);
         initEvent();
-        load();
+        presenter.loadHotInfo();
     }
 
     private void initView(View v){
@@ -67,53 +78,32 @@ public class SearchHotFragment extends Fragment implements View.OnClickListener 
 
     }
 
-    private  void initEvent(){
+    private void initEvent(){
 
     }
 
-    private void load(){
-        loadHotInfo();
-    }
-
-    /**
-     * 加载热点信息
-     */
-    private void loadHotInfo(){
-        isProgress=true;
-        String address="http://redrock.udday.cn:2022/search/hot";
-        HttpUtil.sendOkHttpRequest(address, new Callback() {
+    @Override
+    public void loadHotInfo(SearchHotBean searchHotBean) {
+        requireActivity().runOnUiThread(new Runnable() {
             @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                e.printStackTrace();
-                requireActivity().runOnUiThread(new Runnable() {
+            public void run() {
+                HotListRecyclerAdapter adapter=new HotListRecyclerAdapter(searchHotBean.getHots());
+                adapter.setOnItemClickListener(new OnItemClickListener() {
                     @Override
-                    public void run() {
-                        Toast.makeText(requireContext(),"网络请求失败",Toast.LENGTH_SHORT).show();
+                    public void onItemClick(View view, int position) {
+                        SearchFragment.getInstance().setSearchText(searchHotBean.getHots().get(position).getFirst());
                     }
                 });
-            }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                final String responseText= Objects.requireNonNull(response.body()).string();
-                final SearchHotBean searchHotBean= Utility.handleSearchHotInfo(responseText);
-                requireActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        isProgress=false;
-                        HotListRecyclerAdapter adapter=new HotListRecyclerAdapter(searchHotBean.getHots());
-                        adapter.setOnItemClickListener(new OnItemClickListener() {
-                            @Override
-                            public void onItemClick(View view, int position) {
-                                SearchFragment.getInstance().setSearchText(searchHotBean.getHots().get(position).getFirst());
-                            }
-                        });
-                        mRecycler.setAdapter(adapter);
-                        mRecycler.setLayoutManager(new GridLayoutManager(requireContext(),2));
-                    }
-                });
+                mRecycler.setAdapter(adapter);
+                mRecycler.setLayoutManager(new GridLayoutManager(requireContext(),2));
             }
         });
+
+    }
+
+    @Override
+    public void onRequestFailed() {
+        Toast.makeText(requireContext(),"网络请求失败",Toast.LENGTH_SHORT).show();
     }
 
     @Override
