@@ -5,6 +5,8 @@ import static android.content.Context.BIND_AUTO_CREATE;
 import static com.example.couldmusic.R.drawable.song_pausecircle;
 import static com.example.couldmusic.R.drawable.song_playcircle;
 import android.Manifest;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -19,6 +21,7 @@ import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -96,6 +99,8 @@ public class MusicFragment extends Fragment implements View.OnClickListener, Mus
     private ImageButton ibPlay;
     //上一首
     private ImageButton ibPrevious;
+    //播放动画
+    private ObjectAnimator discAnimation;
 
     private MusicPresenter presenter;
 
@@ -199,6 +204,12 @@ public class MusicFragment extends Fragment implements View.OnClickListener, Mus
         ibPlay.setOnClickListener(this);
         ibPrevious.setOnClickListener(this);
 
+        //设置动画
+        discAnimation = ObjectAnimator.ofFloat(civMusic, "rotation", 0, 360);
+        discAnimation.setDuration(20000);
+        discAnimation.setInterpolator(new LinearInterpolator());
+        discAnimation.setRepeatCount(ValueAnimator.INFINITE);
+
         sbProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -281,18 +292,21 @@ public class MusicFragment extends Fragment implements View.OnClickListener, Mus
                 }
             });
             isPlaying=true;
+            startAnimation();
         }
     }
 
     //播放音乐
     private void play(){
         mBinder.playMusic();
+        startAnimation();
         isPlaying=true;
     }
 
     //暂停音乐
     private void pause(){
         mBinder.pauseMusic();
+        pauseAnimation();
         isPlaying=false;
     }
 
@@ -324,7 +338,21 @@ public class MusicFragment extends Fragment implements View.OnClickListener, Mus
         presenter.loadBackgroundPic(alPicUrl);
     }
 
+    private void startAnimation(){
+        if(discAnimation.isPaused()){
+            discAnimation.start();
+        }else if(discAnimation.isRunning()){
+            discAnimation.resume();
+        }else if(!discAnimation.isStarted()){
+            discAnimation.start();
+        }
+    }
 
+    private void pauseAnimation(){
+        if(discAnimation.isRunning()){
+            discAnimation.pause();
+        }
+    }
 
     public void setSongs(List<SongsDetailBean.Song> songs) {
         this.songs = songs;
