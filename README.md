@@ -1,6 +1,5 @@
 # CouldMusic
 仿网易云音乐app
-<<<<<<< HEAD
 
 ## 项目关系图
 
@@ -39,5 +38,4 @@
 ![](image_readme\3b24c512ccfc0dc5aa14196fbd1877b.jpg)
 
 结果目前只有三种，而且只有单曲和歌单可以点击。
-=======
->>>>>>> main
+
